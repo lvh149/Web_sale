@@ -6,6 +6,7 @@ use App\Repository\CustomersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=CustomersRepository::class)
@@ -25,7 +26,7 @@ class Customers
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique = true)
      */
     private $email;
 
@@ -35,7 +36,7 @@ class Customers
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=20)
+     * @ORM\Column(type="string", length=20, unique = true)
      */
     private $phone;
 
