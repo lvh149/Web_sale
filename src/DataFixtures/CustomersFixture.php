@@ -8,6 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class CustomersFixture extends Fixture
 {
+    public const customerId = 'customerId';
     public function load(ObjectManager $manager): void
     {
         for ($i = 0; $i < 20; $i++) {
@@ -21,7 +22,7 @@ class CustomersFixture extends Fixture
             $customer->setAddress('VN');
             $manager->persist($customer);
         }
-
+        $this->addReference(self::customerId, $customer);
 
         $manager->flush();
     }

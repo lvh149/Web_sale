@@ -15,7 +15,8 @@ class CategoriesFixture extends Fixture
         for ($i = 0; $i < 20; $i++) {
             $category = new Categories();
             $category->setName('Category '.$i);            
-            $manager->persist($category);                      
+            $manager->persist($category);    
+            $this->setReference('category-id', $category);                  
         }
         $this->addReference(self::CategoryId, $category);
 

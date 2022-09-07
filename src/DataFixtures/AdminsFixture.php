@@ -9,6 +9,7 @@ use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 
 class AdminsFixture extends Fixture
 {
+    public const AdminId = 'AdminId';
 
     public function load(ObjectManager $manager): void
     {       
@@ -25,6 +26,7 @@ class AdminsFixture extends Fixture
             $admin->setRole(random_int(0,1));
             $manager->persist($admin);
         }
+        $this->addReference(self::AdminId, $admin);
 
 
         $manager->flush();
