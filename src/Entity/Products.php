@@ -72,12 +72,12 @@ class Products
 
     public function getCategoryId(): ?Categories
     {
-        return $this->category_id;
+        return $this->category;
     }
 
-    public function setCategoryId(?Categories $category_id): self
+    public function setCategoryId(?Categories $category): self
     {
-        $this->category_id = $category_id;
+        $this->category = $category;
 
         return $this;
     }

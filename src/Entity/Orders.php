@@ -57,24 +57,24 @@ class Orders
 
     public function getAdminId(): ?Admins
     {
-        return $this->admin_id;
+        return $this->admin;
     }
 
-    public function setAdminId(?Admins $admin_id): self
+    public function setAdminId(?Admins $admin): self
     {
-        $this->admin_id = $admin_id;
+        $this->admin = $admin;
 
         return $this;
     }
 
     public function getCustomerId(): ?Customers
     {
-        return $this->customer_id;
+        return $this->customer;
     }
 
-    public function setCustomerId(?Customers $customer_id): self
+    public function setCustomerId(?Customers $customer): self
     {
-        $this->customer_id = $customer_id;
+        $this->customer = $customer;
 
         return $this;
     }

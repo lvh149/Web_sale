@@ -41,12 +41,12 @@ class OrdersDetail
 
     public function getOrderId(): ?Orders
     {
-        return $this->order_id;
+        return $this->order;
     }
 
-    public function setOrderId(?Orders $order_id): self
+    public function setOrderId(?Orders $order): self
     {
-        $this->order_id = $order_id;
+        $this->order = $order;
 
         return $this;
     }
@@ -56,9 +56,9 @@ class OrdersDetail
         return $this->product_id;
     }
 
-    public function setProductId(?Products $product_id): self
+    public function setProductId(?Products $product): self
     {
-        $this->product_id = $product_id;
+        $this->product = $product;
 
         return $this;
     }
