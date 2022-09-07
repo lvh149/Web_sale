@@ -20,7 +20,7 @@ class Products
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Categories::class, inversedBy="products")
+     * @ORM\ManyToOne(targetEntity=Categories::class, inversedBy="products") 
      * @ORM\JoinColumn(nullable=false)
      */
     private $category;

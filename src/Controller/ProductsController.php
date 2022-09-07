@@ -72,13 +72,15 @@ class ProductsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $category = $form->get('category')->getData();
+            $product->setCategoryId($category);
             $productsRepository->add($product, true);
 
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('products/edit.html.twig', [
-            // 'product' => $product,
+            'product' => $product,
             'form' => $form,
         ]);
     }

@@ -8,12 +8,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 class ProductsType extends AbstractType
 {
+    
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // dd($options);
         $builder
             ->add('name')
             ->add('image')
@@ -25,23 +27,19 @@ class ProductsType extends AbstractType
                 'class' => Categories::class,
                 'choice_label' => 'name',
                 'choice_value' => 'id',
-                // 'choice_value' => function (?Categories $Categories) {
-                //     return $Categories ? $Categories->getId() : '';
-                // },
                 'mapped' => false,
-                'label' => false,
                 'multiple' => false,
                 'expanded' => false,
-                'required' => false,
-                'data' => 2125,
+                'data' => $options['data']->getCategoryId(),
             ))
         ;
     }
+    
 
-    // public function configureOptions(OptionsResolver $resolver): void
-    // {
-    //     $resolver->setDefaults([
-    //         'data_class' => Products::class,
-    //     ]);
-    // }
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Products::class,
+        ]);
+    }
 }

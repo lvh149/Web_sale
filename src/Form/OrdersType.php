@@ -14,6 +14,15 @@ class OrdersType extends AbstractType
         $builder
             ->add('date')
             ->add('status')
+            ->add('category', EntityType::class, array(
+                'class' => Categories::class,
+                'choice_label' => 'name',
+                'choice_value' => 'id',
+                'mapped' => false,
+                'multiple' => false,
+                'expanded' => false,
+                'data' => $options['data']->getCategoryId(),
+            ))
         ;
     }
 
