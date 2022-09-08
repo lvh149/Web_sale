@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @Route("/categories")
@@ -18,10 +19,17 @@ class CategoriesController extends AbstractController
     /**
      * @Route("/", name="app_categories_index", methods={"GET"})
      */
-    public function index(CategoriesRepository $categoriesRepository): Response
+    public function index(CategoriesRepository $categoriesRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $category = $categoriesRepository->findAll();
+        $pagination = $paginator->paginate(
+            $category, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/ 
+            7 /*limit per page*/
+        );
+
         return $this->render('categories/index.html.twig', [
-            'categories' => $categoriesRepository->findAll(),
+            'categories' => $pagination,
         ]);
     }
 

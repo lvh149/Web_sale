@@ -53,7 +53,7 @@ class OrdersDetail
 
     public function getProductId(): ?Products
     {
-        return $this->product_id;
+        return $this->product;
     }
 
     public function setProductId(?Products $product): self

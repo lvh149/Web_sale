@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Knp\Component\Pager\PaginatorInterface;
+
 /**
  * @Route("/products")
  */
@@ -21,10 +23,16 @@ class ProductsController extends AbstractController
     /**
      * @Route("/", name="app_products_index", methods={"GET"})
      */
-    public function index(ProductsRepository $productsRepository): Response
+    public function index(ProductsRepository $productsRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $products = $productsRepository->findAll();
+        $pagination = $paginator->paginate(
+            $products, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/ 
+            7 /*limit per page*/
+        );
         return $this->render('products/index.html.twig', [
-            'products' => $productsRepository->findAll(),
+            'products' => $pagination,
         ]);
     }
 

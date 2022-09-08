@@ -6,6 +6,7 @@ use App\Entity\Admins;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class AdminsType extends AbstractType
 {
@@ -18,6 +19,15 @@ class AdminsType extends AbstractType
             ->add('phone')
             ->add('address')
             ->add('role')
+            ->add('role', ChoiceType::class, [
+                'required' => true,
+                'multiple' => false,
+                'expanded' => false,
+                'choices'  => [
+                  'Quản lý' => '0',
+                  'Nhân viên' => '1',
+                ],
+            ])
         ;
     }
 

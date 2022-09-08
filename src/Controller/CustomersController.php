@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @Route("/customers")
@@ -18,10 +19,16 @@ class CustomersController extends AbstractController
     /**
      * @Route("/", name="app_customers_index", methods={"GET"})
      */
-    public function index(CustomersRepository $customersRepository): Response
+    public function index(CustomersRepository $customersRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $customer = $customersRepository->findAll();
+        $pagination = $paginator->paginate(
+            $customer, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/ 
+            7 /*limit per page*/
+        );
         return $this->render('customers/index.html.twig', [
-            'customers' => $customersRepository->findAll(),
+            'customers' => $pagination, 
         ]);
     }
 

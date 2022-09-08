@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Admins;
 use App\Form\AdminsType;
+use App\Form\EditAdminsType;
 use App\Repository\AdminsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @Route("/admins")
@@ -18,10 +20,16 @@ class AdminsController extends AbstractController
     /**
      * @Route("/", name="app_admins_index", methods={"GET"})
      */
-    public function index(AdminsRepository $adminsRepository): Response
+    public function index(AdminsRepository $adminsRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $admins = $adminsRepository->findAll();
+        $pagination = $paginator->paginate(
+            $admins, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/ 
+            7 /*limit per page*/
+        );
         return $this->render('admins/index.html.twig', [
-            'admins' => $adminsRepository->findAll(),
+            'admins' => $pagination
         ]);
     }
 
@@ -61,7 +69,7 @@ class AdminsController extends AbstractController
      */
     public function edit(Request $request, Admins $admin, AdminsRepository $adminsRepository): Response
     {
-        $form = $this->createForm(AdminsType::class, $admin);
+        $form = $this->createForm(EditAdminsType::class, $admin);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
