@@ -1,4 +1,7 @@
+{% form_theme form  'bootstrap_4_horizontal_layout.html.twig' %}
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_widget(form) }}
+<div class="card-footer text-center">
+	<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Thêm') }}</button>
+</div>
 {{ form_end(form) }}

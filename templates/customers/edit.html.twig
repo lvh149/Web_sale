@@ -3,11 +3,9 @@
 {% block title %}Edit Customers{% endblock %}
 
 {% block body %}
-    <h1>Edit Customers</h1>
+    <h1>Sửa thông tin khách hàng</h1>
 
-    {{ include('customers/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('customers/_form.html.twig', {'button_label': 'Sửa'}) }}
 
-    <a href="{{ path('app_customers_index') }}">back to list</a>
 
-    {{ include('customers/_delete_form.html.twig') }}
 {% endblock %}

@@ -5,9 +5,7 @@
 {% block body %}
     <h1>Edit Orders</h1>
 
-    {{ include('orders/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('orders/_form.html.twig', {'button_label': 'Sửa'}) }}
 
-    <a href="{{ path('app_orders_index') }}">back to list</a>
 
-    {{ include('orders/_delete_form.html.twig') }}
 {% endblock %}

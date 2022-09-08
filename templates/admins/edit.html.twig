@@ -1,13 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Admins{% endblock %}
+{% block title %}Edit Admins
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Admins</h1>
+	<h3>Sửa thông tin nhân viên</h3>
 
-    {{ include('admins/_form.html.twig', {'button_label': 'Update'}) }}
+	{# {{ include('admins/_form.html.twig', {'button_label': 'Sửa'}) }} #}
+	{% form_theme form  'bootstrap_4_horizontal_layout.html.twig' %}
+	{{ form_start(form) }}
+	 {{ form_row(form.name) }}
+	 {{ form_row(form.email) }}
+	 {{ form_row(form.phone) }}
+	 {{ form_row(form.address) }}
+	 {{ form_row(form.role) }}
+	<div class="card-footer text-center">
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Sửa') }}</button>
+	</div>
+	{{ form_end(form) }} 
 
-    <a href="{{ path('app_admins_index') }}">back to list</a>
 
-    {{ include('admins/_delete_form.html.twig') }}
 {% endblock %}

@@ -1,19 +1,74 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+		<!-- Bootstrap core CSS     -->
+		<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+		<link href="{{ asset('/css/material-dashboard.css') }}" rel="stylesheet">
+		<link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+		<link
+		href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		{# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('app') }}
+		{% endblock %}
+
+		<script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
+		<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+		<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+		<script src="{{ asset('js/material.min.js') }}"></script>
+		<script src="{{ asset('js/perfect-scrollbar.jquery.min.js') }}"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+		<script src="{{ asset('js/arrive.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.validate.min.js') }}"></script>
+		<script src="{{ asset('js/moment.min.js') }}"></script>
+		<script src="{{ asset('js/chartist.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.bootstrap-wizard.js') }}"></script>
+		<script src="{{ asset('js/bootstrap-notify.js') }}"></script>
+		<script src="{{ asset('js/jquery.select-bootstrap.js') }}"></script>
+		<script src="{{ asset('js/sweetalert2.js') }}"></script>
+		<script src="{{ asset('js/jasny-bootstrap.min.js') }}"></script>
+		<script src="{{ asset('js/fullcalendar.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.tagsinput.js') }}"></script>
+		<script src="{{ asset('js/material-dashboard.js') }}"></script>
+		<script src="{{ asset('js/bootstrap-datetimepicker.js') }}"></script>
+		<script>
+			$(function () {
+                let path = window.location.href.split('/').slice(0, 5).join('/');
+                path = path.split('?page')[0];
+				path = path.split('&page')[0];
+				console.log(path);
+
+                $('ul a').each(function () {
+                    if (this.href == path) {
+                    	$(this).parent('li').addClass('active');
+                    }
+                });
+            })
+		</script>
+		{% block javascripts %}
+			{{ encore_entry_script_tags('app') }}
+		{% endblock %}
+	</head>
+	<body>
+		<div class="wrapper" style="height:100%;">
+			{{ include('sidebar.html.twig') }}
+			<div class="main-panel">
+				{{ include('topbar.html.twig') }}
+				<div class="content">
+					<div class="container-fluid">
+						<div class="row"></div>
+						{% block body %}{% endblock %}
+					</div>
+				</div>
+			</div>
+			{{ include('footer.html.twig') }}
+		</div>
+	</body>
 </html>
