@@ -20,12 +20,12 @@ class Orders
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Admins::class, inversedBy="orders")
+     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="orders")
      */
     private $admin;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Customers::class, inversedBy="orders")
+     * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
      */
     private $customer;
@@ -55,26 +55,26 @@ class Orders
         return $this->id;
     }
 
-    public function getAdminId(): ?Admins
+    public function getAdminId(): ?Users
     {
         return $this->admin;
     }
 
-    public function setAdminId(?Admins $admin): self
+    public function setAdminId(?Users $user): self
     {
-        $this->admin = $admin;
+        $this->admin = $user;
 
         return $this;
     }
 
-    public function getCustomerId(): ?Customers
+    public function getCustomerId(): ?Users
     {
         return $this->customer;
     }
 
-    public function setCustomerId(?Customers $customer): self
+    public function setCustomerId(?Users $user): self
     {
-        $this->customer = $customer;
+        $this->customer = $user;
 
         return $this;
     }

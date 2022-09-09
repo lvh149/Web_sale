@@ -14,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Admins[]    findAll()
  * @method Admins[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AdminsRepository extends ServiceEntityRepository
+class AdminsRepository extends ServiceEntityRepository 
 {
     public function __construct(ManagerRegistry $registry)
     {

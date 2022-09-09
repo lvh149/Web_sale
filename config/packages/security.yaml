@@ -5,14 +5,45 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        # used to reload user from session & other features (e.g. switch_user)
+        app_user_provider:
+            entity:
+                class: App\Entity\Users
+                property: email
+    role_hierarchy:
+        admin:       customer
+        superadmin: [admin, ROLE_ALLOWED_TO_SWITCH]            
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            provider: app_user_provider
+            form_login:
+                # "app_login" is the name of the route created previously
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true 
+            json_login:
+                # api_login is a route we will create below
+                check_path: api_login
+            # http_basic:
+            #     realm: Secured Area
+            logout:
+                path: app_logout
+    access_control:
+        # require ROLE_ADMIN for /admin*
+        - { path: '^/dashboard', roles: superadmin }
+
+        # or require ROLE_ADMIN or IS_AUTHENTICATED_FULLY for /admin*
+        # - { path: '^/admin', roles: [IS_AUTHENTICATED_FULLY, ROLE_ADMIN] }
+
+        # the 'path' value can be any valid regular expression
+        # (this one will match URLs like /api/post/7298 and /api/comment/528491)
+        # - { path: ^/api/(post|comment)/\d+$, roles: ROLE_USER }    
+    
+           
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -22,19 +53,5 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
-    access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
 
-when@test:
-    security:
-        password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
-            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-                algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
-                memory_cost: 10 # Lowest possible value for argon
+

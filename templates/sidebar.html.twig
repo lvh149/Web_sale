@@ -65,7 +65,7 @@
 				</div>
 			</li>
 			<li>
-				<a href="{{ path('app_customers_index') }}">
+				<a href="{{ path('app_users_index',{'role':'customer'}) }}">
 					<i class="material-icons">people</i>
 					<p>
 						Quản lý khách hàng
@@ -89,7 +89,7 @@
 				</a>
 			</li>
 			<li>
-				<a href="{{ path('app_admins_index') }}">
+				<a href="{{ path('app_users_index',{'role':'admin'}) }}">
 					<i class="material-icons">account_circle</i>
 					<p>
 						Quản lý nhân viên
