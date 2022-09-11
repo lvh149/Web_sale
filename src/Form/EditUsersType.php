@@ -23,8 +23,8 @@ class EditUsersType extends AbstractType
                 'multiple' => false,
                 'expanded' => false,
                 'choices'  => [
-                    "admin" => "admin",
-                    "superadmin" => "superadmin",
+                    "Quản lý" => "ROLE_SUPERADMIN",
+                    "Nhân Viên" => "ROLE_ADMIN",
                 ],
             ])
         ;

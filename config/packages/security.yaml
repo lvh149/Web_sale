@@ -11,8 +11,8 @@ security:
                 class: App\Entity\Users
                 property: email
     role_hierarchy:
-        admin:       customer
-        superadmin: [admin, ROLE_ALLOWED_TO_SWITCH]            
+        # ROLE_ADMIN:   
+        ROLE_SUPERADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]            
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -25,6 +25,8 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true 
+                always_use_default_target_path: true
+                default_target_path: app_login
             json_login:
                 # api_login is a route we will create below
                 check_path: api_login
@@ -32,9 +34,10 @@ security:
             #     realm: Secured Area
             logout:
                 path: app_logout
+                target: app_login
     access_control:
         # require ROLE_ADMIN for /admin*
-        - { path: '^/dashboard', roles: superadmin }
+        - { path: '^/dashboard', roles: ROLE_ADMIN }
 
         # or require ROLE_ADMIN or IS_AUTHENTICATED_FULLY for /admin*
         # - { path: '^/admin', roles: [IS_AUTHENTICATED_FULLY, ROLE_ADMIN] }

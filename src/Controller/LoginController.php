@@ -12,6 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
     
      public function index(AuthenticationUtils $authenticationUtils): Response
       {
+         if($this->isGranted('ROLE_ADMIN')){
+            return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER); 
+         }else if($this->isGranted('ROLE_CUSTOMER')){
+            // route ...
+            dd(1);
+         }
          // get the login error if there is one
          $error = $authenticationUtils->getLastAuthenticationError();
 

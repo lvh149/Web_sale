@@ -24,7 +24,7 @@ class UsersController extends AbstractController
      */
     public function index(UsersRepository $usersRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $roles = $request->get('role') == 'customer' ? ['customer'] :  ['admin', 'superadmin'];
+        $roles = $request->get('role') == 'customer' ? ['ROLE_CUSTOMER'] :  ['ROLE_ADMIN', 'ROLE_SUPERADMIN'];
 
         $arruser = [];
         foreach ($roles as $role) {
@@ -86,11 +86,10 @@ class UsersController extends AbstractController
         $id = $request->get('id');
         $user = $usersRepository->find($id);
         $role = $user->getRoles()[0];
-        if ($role == 'customer') {
+        if ($role == 'ROLE_CUSTOMER') {
             $form = $this->createForm(CustomersType::class, $user);
             $form->handleRequest($request);
         } else {
-
             $form = $this->createForm(EditUsersType::class, $user);
             $form->handleRequest($request);
         }

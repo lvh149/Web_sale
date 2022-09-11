@@ -24,8 +24,8 @@ class UsersType extends AbstractType
                 'multiple' => false,
                 'expanded' => false,
                 'choices'  => [
-                    "admin" => "admin",
-                    "superadmin" => "superadmin",
+                    "Quản lý" => "ROLE_ADMIN",
+                    "Nhân Viên" => "ROLE_SUPERADMIN",
                 ],
             ])
         ;

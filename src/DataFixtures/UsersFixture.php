@@ -32,7 +32,7 @@ class UsersFixture extends Fixture
             );
             $user->setPhone('0'.random_int(100000000, 999999999));
             $user->setAddress('VN');
-            $user->setRoles(['admin']);
+            $user->setRoles(['ROLE_ADMIN']);
             $manager->persist($user);
         }
         $this->addReference(self::AdminId, $user);
@@ -47,7 +47,7 @@ class UsersFixture extends Fixture
             );
             $user->setPhone('0'.random_int(100000000, 999999999));
             $user->setAddress('VN');
-            $user->setRoles(['superadmin']);
+            $user->setRoles(['ROLE_SUPERADMIN']);
             $manager->persist($user);
         }    
         for ($i = 21; $i < 40; $i++) {
@@ -61,7 +61,7 @@ class UsersFixture extends Fixture
             );
             $user->setPhone('0'.random_int(100000000, 999999999));
             $user->setAddress('VN');
-            $user->setRoles(['customer']);
+            $user->setRoles(['ROLE_CUSTOMER']);
             $manager->persist($user);
         }
         $this->addReference(self::CustomerId, $user);

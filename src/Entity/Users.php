@@ -117,6 +117,15 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    public function nameRoles()
+    {
+        $roles = $this->roles;
+
+        $role = $roles[0] =="ROLE_CUSTOMER" ? "Khách hàng" : ($roles[0] == "ROLE_ADMIN" ? "Nhân viên" : "Quản lý");
+
+        return $role;
+    }
+
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -179,18 +188,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAddress(string $address): self
     {
         $this->address = $address;
-
-        return $this;
-    }
-
-    public function getRole(): ?int
-    {
-        return $this->role;
-    }
-
-    public function setRole(int $role): self
-    {
-        $this->role = $role;
 
         return $this;
     }
