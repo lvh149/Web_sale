@@ -16,7 +16,6 @@ use Symfony\Component\Routing\Annotation\Route;
             return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER); 
          }else if($this->isGranted('ROLE_CUSTOMER')){
             // route ...
-            dd(1);
          }
          // get the login error if there is one
          $error = $authenticationUtils->getLastAuthenticationError();

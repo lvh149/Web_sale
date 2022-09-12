@@ -16,6 +16,7 @@ class EditUsersType extends AbstractType
         $builder
             ->add('name')
             ->add('email')
+            ->add('password')
             ->add('phone')
             ->add('address')
             ->add('roles', ChoiceType::class, [

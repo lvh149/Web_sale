@@ -64,11 +64,20 @@
 					</ul>
 				</div>
 			</li>
+			{% if is_granted('ROLE_SUPERADMIN') %}
 			<li>
 				<a href="{{ path('app_users_index',{'role':'customer'}) }}">
 					<i class="material-icons">people</i>
 					<p>
 						Quản lý khách hàng
+					</p>
+				</a>
+			</li>
+			<li>
+				<a href="{{ path('app_users_index',{'role':'admin'}) }}">
+					<i class="material-icons">account_circle</i>
+					<p>
+						Quản lý nhân viên
 					</p>
 				</a>
 			</li>
@@ -80,19 +89,12 @@
 					</p>
 				</a>
 			</li>
+			{% endif %}
 			<li>
 				<a href="{{ path('app_products_index') }}">
 					<i class="material-icons">people</i>
 					<p>
 						Quản lý sản phẩm
-					</p>
-				</a>
-			</li>
-			<li>
-				<a href="{{ path('app_users_index',{'role':'admin'}) }}">
-					<i class="material-icons">account_circle</i>
-					<p>
-						Quản lý nhân viên
 					</p>
 				</a>
 			</li>

@@ -35,8 +35,12 @@ security:
             logout:
                 path: app_logout
                 target: app_login
+            access_denied_handler: App\Security\AccessDeniedHandler       
     access_control:
         # require ROLE_ADMIN for /admin*
+        - { path: '^/dashboard/users/', roles: ROLE_SUPERADMIN }
+        - { path: '^/dashboard/categories/', roles: ROLE_SUPERADMIN }
+        - { path: '^/dashboard/products/.', roles: ROLE_SUPERADMIN }
         - { path: '^/dashboard', roles: ROLE_ADMIN }
 
         # or require ROLE_ADMIN or IS_AUTHENTICATED_FULLY for /admin*
