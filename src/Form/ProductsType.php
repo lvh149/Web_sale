@@ -8,6 +8,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 class ProductsType extends AbstractType
 {
@@ -16,7 +18,24 @@ class ProductsType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('image')
+            ->add('image', FileType::class, [
+                'label' => false,
+                'mapped' => false,
+                'required'=> false,
+                'attr' => array('style' => 'height: 30px'),
+                'constraints' => [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/jpg',
+                            'image/png',
+                            'image/gif',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image',
+                    ])
+                ],
+            ])
             ->add('info')
             ->add('price')
             ->add('point')

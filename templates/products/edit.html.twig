@@ -1,11 +1,51 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Products{% endblock %}
+{% block title %}Edit Products
+{% endblock %}
 
 {% block body %}
-    <h1>Sửa thông tin sản phẩm</h1>
+	<h1>Sửa thông tin sản phẩm</h1>
 
-    {{ include('products/_form.html.twig', {'button_label': 'Sửa'}) }}
+	{% form_theme form  'bootstrap_4_horizontal_layout.html.twig' %}
+	{{ form_start(form) }}
+	{{ form_errors(form) }}
+	{{ form_row(form.name) }}
+	<br>
+	<label class="col-form-label col-sm-2 required" for="products_info">Image</label>
+	<div class="col-md-3 col-sm-4">
+			<div class="fileinput text-center fileinput-new" data-provides="fileinput">
+				<div class="fileinput-new thumbnail img-circle">
+					<img src="{{asset('uploads/images/' ~ product.image)}}" alt="...">
+				</div>
+				<div class="fileinput-preview fileinput-exists thumbnail img-circle" style=""></div>
+				<div>
+					<span class="btn btn-round btn-rose btn-file">
+						<span class="fileinput-new">Add Photo</span>
+						<span class="fileinput-exists">Change</span>
+                        {{ form_row(form.image) }}
+					</span>
+					<br>
+					<a href="#pablo" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput">
+						<i class="fa fa-times"></i>
+						Remove
+						<div class="ripple-container">
+							<div class="ripple ripple-on ripple-out" style="left: 69px; top: 12.6875px; background-color: rgb(255, 255, 255); transform: scale(15.5484);"></div>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+        <br>
+	<br><br><br><br><br><br><br><br>
+	{{ form_row(form.info) }}
+	{{ form_row(form.price) }}
+	{{ form_row(form.point) }}
+	{{ form_row(form.point_give) }}
+	{{ form_row(form.category) }}
+	<div class="card-footer text-center">
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Sửa') }}</button>
+	</div>
+	{{ form_end(form) }}
 
 
 {% endblock %}

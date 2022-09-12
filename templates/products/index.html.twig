@@ -35,7 +35,11 @@
 									<tr>
 										<td>{{ product.id }}</td>
 										<td>{{ product.name }}</td>
-										<td>{{ product.image }}</td>
+										{% if(product.image) %}
+										<td><img src="{{asset('uploads/images/' ~ product.image)}}" style="height: 100px;width:200px;" alt=""></td>
+										{% else %}
+										<td></td>
+										{% endif %} 
 										<td>{{ product.info }}</td>
 										<td>{{ product.price }}</td>
 										<td>{{ product.point }}</td>

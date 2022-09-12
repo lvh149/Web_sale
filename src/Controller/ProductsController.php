@@ -3,16 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Products;
-use App\Entity\Categories;
 use App\Form\ProductsType;
 use App\Repository\ProductsRepository;
 use App\Repository\CategoriesRepository;
-use Doctrine\ORM\Mapping\Id;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use App\Service\FileUploader;
 use Knp\Component\Pager\PaginatorInterface;
 
 /**
@@ -28,9 +26,10 @@ class ProductsController extends AbstractController
         $products = $productsRepository->findAll();
         $pagination = $paginator->paginate(
             $products, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/ 
+            $request->query->getInt('page', 1), /*page number*/
             7 /*limit per page*/
         );
+        // dd($pagination);
         return $this->render('products/index.html.twig', [
             'products' => $pagination,
         ]);
@@ -39,7 +38,7 @@ class ProductsController extends AbstractController
     /**
      * @Route("/new", name="app_products_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, ProductsRepository $productsRepository, CategoriesRepository $categoriesRepository): Response
+    public function new(Request $request, ProductsRepository $productsRepository, CategoriesRepository $categoriesRepository, FileUploader $fileUploader): Response
     {
         $product = new Products();
         // $categories = $categoriesRepository->findAll();
@@ -47,6 +46,11 @@ class ProductsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $brochureFile = $form->get('image')->getData();
+            if ($brochureFile) {
+                $brochureFileName = $fileUploader->upload($brochureFile);
+                $product->setImage($brochureFileName);
+            }
             $categories = $categoriesRepository->find($request->request->all()['products']['category']);
             $product->setCategoryId($categories);
             $productsRepository->add($product, true);
@@ -74,12 +78,19 @@ class ProductsController extends AbstractController
     /**
      * @Route("/{id}/edit", name="app_products_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Products $product, ProductsRepository $productsRepository): Response
+    public function edit(Request $request, Products $product, ProductsRepository $productsRepository, FileUploader $fileUploader): Response
     {
+        
         $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $brochureFile = $form->get('image')->getData();
+            if ($brochureFile) {
+                $brochureFileName = $fileUploader->upload($brochureFile);
+                $product->setImage($brochureFileName);
+            }
+            // dd($product);
             $category = $form->get('category')->getData();
             $product->setCategoryId($category);
             $productsRepository->add($product, true);
@@ -98,7 +109,7 @@ class ProductsController extends AbstractController
      */
     public function delete(Request $request, Products $product, ProductsRepository $productsRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
             $productsRepository->remove($product, true);
         }
 

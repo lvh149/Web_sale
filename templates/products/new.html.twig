@@ -1,11 +1,28 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Products{% endblock %}
+{% block title %}New Products
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Products</h1>    
+	<h1>Thêm sản phẩm</h1>
 
-    {{ include('products/_form.html.twig') }}
-
-    <a href="{{ path('app_products_index') }}">back to list</a>
+	{# {{ include('products/_form.html.twig') }} #}
+	{% form_theme form  'bootstrap_4_horizontal_layout.html.twig' %}
+	{{ form_start(form) }}
+    {{ form_errors(form) }}
+	{{ form_row(form.name) }}
+    <br>
+	<label class="col-form-label col-sm-2 required" for="products_info">Image</label>
+	<div class="col-sm-10">
+		{{ form_widget(form.image) }}
+	</div>
+	{{ form_row(form.info) }}
+	{{ form_row(form.price) }}
+	{{ form_row(form.point) }}
+	{{ form_row(form.point_give) }}
+	{{ form_row(form.category) }}
+	<div class="card-footer text-center">
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Thêm') }}</button>
+	</div>
+	{{ form_end(form) }}
 {% endblock %}
