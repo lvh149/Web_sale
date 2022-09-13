@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * @Route("/categories")
@@ -36,7 +38,7 @@ class CategoriesController extends AbstractController
     /**
      * @Route("/new", name="app_categories_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, CategoriesRepository $categoriesRepository): Response
+    public function new(Request $request, CategoriesRepository $categoriesRepository, ValidatorInterface $validator): Response
     {
         $category = new Categories();
         $form = $this->createForm(CategoriesType::class, $category);
@@ -87,12 +89,24 @@ class CategoriesController extends AbstractController
     /**
      * @Route("/{id}", name="app_categories_delete", methods={"POST"})
      */
-    public function delete(Request $request, Categories $category, CategoriesRepository $categoriesRepository): Response
+    public function delete(Request $request, Categories $category, CategoriesRepository $categoriesRepository, Session $session): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
-            $categoriesRepository->remove($category, true);
+        try{
+            if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+
+                $categoriesRepository->remove($category, true);
+            }
+            return $this->redirectToRoute('app_categories_index', [], Response::HTTP_SEE_OTHER);
+        }
+        catch(\Exception $e){
+            $this->addFlash(
+                'error',
+                'Danh mục đang có sản phẩm'
+            );
+            return $this->redirectToRoute('app_categories_index');
         }
 
-        return $this->redirectToRoute('app_categories_index', [], Response::HTTP_SEE_OTHER);
+        
+
     }
 }

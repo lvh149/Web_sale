@@ -40,17 +40,17 @@
 		<script src="{{ asset('js/bootstrap-datetimepicker.js') }}"></script>
 		<script>
 			$(function () {
-                let path = window.location.href.split('/').slice(0, 6).join('/');
-                path = path.split('?page')[0];
-				path = path.split('&page')[0];
-				console.log(path);
+let path = window.location.href.split('/').slice(0, 6).join('/');
+path = path.split('?page')[0];
+path = path.split('&page')[0];
+console.log(path);
 
-                $('ul a').each(function () {
-                    if (this.href == path) {
-                    	$(this).parent('li').addClass('active');
-                    }
-                });
-            })
+$('ul a').each(function () {
+if (this.href == path) {
+$(this).parent('li').addClass('active');
+}
+});
+})
 		</script>
 		{% block javascripts %}
 			{{ encore_entry_script_tags('app') }}
@@ -63,7 +63,22 @@
 				{{ include('topbar.html.twig') }}
 				<div class="content">
 					<div class="container-fluid">
-						<div class="row"></div>
+						<div class="row">
+							{% for message in app.flashes('error') %}
+								<div class="col-12">
+									<div class="alert alert-danger">
+										{{ message }}
+									</div>
+								</div>
+							{% endfor %}
+							{% for message in app.flashes('success') %}
+								<div class="col-12">
+									<div class="alert alert-success">
+										{{ message }}
+									</div>
+								</div>
+							{% endfor %}
+						</div>
 						{% block body %}{% endblock %}
 					</div>
 				</div>

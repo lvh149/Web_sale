@@ -81,11 +81,12 @@ class UsersController extends AbstractController
     /**
      * @Route("/{id}/edit", name="app_users_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Users $user, UsersRepository $usersRepository): Response
+    public function edit(Request $request, Users $user, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
     {
         $id = $request->get('id');
         $user = $usersRepository->find($id);
         $role = $user->getRoles()[0];
+        $currentPassword = $user->getPassword();
         if ($role == 'ROLE_CUSTOMER') {
             $form = $this->createForm(CustomersType::class, $user);
             $form->handleRequest($request);
@@ -94,8 +95,15 @@ class UsersController extends AbstractController
             $form->handleRequest($request);
         }
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($currentPassword != $user->getPassword()) {
+                $hashedPassword = $passwordHasher->hashPassword(
+                    $user,
+                    $user->getPassword()
+                );
+                $user->setPassword($hashedPassword);
+            }
             $usersRepository->add($user, true);
-            return $this->redirectToRoute('app_users_index', ['role'=>$role], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_users_index', ['role' => $role], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('users/edit.html.twig', [
@@ -114,23 +122,5 @@ class UsersController extends AbstractController
         }
 
         return $this->redirectToRoute('app_users_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    public function findUsersOfRoles($roles)
-    {
-        $condition = 'u.roles LIKE :roles0';
-        foreach ($roles as $key => $role) {
-            if ($key !== 0) {
-                $condition .= " OR u.roles LIKE :roles" . $key;
-            }
-        }
-
-        $query = $this->entityManager->createQueryBuilder('u')
-            ->where($condition);
-        foreach ($roles as $key => $role) {
-            $query->setParameter('roles' . $key, '%"' . $role . '"%');
-        }
-
-        return $query->getQuery()->getResult();
     }
 }

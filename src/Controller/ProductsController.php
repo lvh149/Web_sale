@@ -109,10 +109,19 @@ class ProductsController extends AbstractController
      */
     public function delete(Request $request, Products $product, ProductsRepository $productsRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
-            $productsRepository->remove($product, true);
+        try{
+            if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
+                $productsRepository->remove($product, true);
+            }
+    
+            return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
         }
-
-        return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
+        catch(\Exception $e){
+            $this->addFlash(
+                'error',
+                'Sản phẩm đang trong giỏ hàng hoặc hóa đơn'
+            );
+            return $this->redirectToRoute('app_products_index');
+        }
     }
 }

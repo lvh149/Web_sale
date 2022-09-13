@@ -6,6 +6,7 @@ use App\Repository\OrdersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=OrdersRepository::class)
@@ -27,16 +28,19 @@ class Orders
     /**
      * @ORM\ManyToOne(targetEntity=Users::class, inversedBy="orders")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotBlank
      */
     private $customer;
 
     /**
      * @ORM\Column(type="date")
+     * @Assert\Date
      */
     private $date;
 
     /**
      * @ORM\Column(type="smallint")
+     * @Assert\NotBlank
      */
     private $status;
 
