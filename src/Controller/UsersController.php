@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Users;
 use App\Form\UsersType;
 use App\Form\EditUsersType;
-use App\Form\CustomersType;
 use App\Repository\UsersRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +23,7 @@ class UsersController extends AbstractController
      */
     public function index(UsersRepository $usersRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $roles = $request->get('role') == 'customer' ? ['ROLE_CUSTOMER'] :  ['ROLE_ADMIN', 'ROLE_SUPERADMIN'];
+        $roles = $request->get('role') == 'ROLE_CUSTOMER' ? ['ROLE_CUSTOMER'] :  ['ROLE_ADMIN', 'ROLE_SUPERADMIN'];
 
         $arruser = [];
         foreach ($roles as $role) {
@@ -52,6 +51,7 @@ class UsersController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user->setIsVerified(true);
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $user->getPassword()
@@ -81,27 +81,21 @@ class UsersController extends AbstractController
     /**
      * @Route("/{id}/edit", name="app_users_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Users $user, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
+    public function edit(Request $request, Users $user, UsersRepository $usersRepository): Response
     {
         $id = $request->get('id');
         $user = $usersRepository->find($id);
         $role = $user->getRoles()[0];
-        $currentPassword = $user->getPassword();
         if ($role == 'ROLE_CUSTOMER') {
-            $form = $this->createForm(CustomersType::class, $user);
+            $form = $this->createForm(EditUsersType::class, $user);
+            $form->remove('roles');
             $form->handleRequest($request);
         } else {
             $form = $this->createForm(EditUsersType::class, $user);
+            $form->remove('point');
             $form->handleRequest($request);
         }
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($currentPassword != $user->getPassword()) {
-                $hashedPassword = $passwordHasher->hashPassword(
-                    $user,
-                    $user->getPassword()
-                );
-                $user->setPassword($hashedPassword);
-            }
             $usersRepository->add($user, true);
             return $this->redirectToRoute('app_users_index', ['role' => $role], Response::HTTP_SEE_OTHER);
         }

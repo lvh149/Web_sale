@@ -15,3 +15,22 @@ app_login:
     path: /login
     methods: GET|POST
     controller: App\Controller\AuthController::login
+app_register:
+    path: /register
+    methods: GET|POST
+    controller: App\Controller\RegistrationController::register
+app_verify_email:
+    path: /verify/email
+    methods: GET|POST
+    controller: App\Controller\RegistrationController::verifyUserEmail
+app_forgot_password_request:
+    path: /reset-password
+    methods: GET|POST
+    controller: App\Controller\ResetPasswordController::request
+app_check_email:
+    path: /check-email
+    methods: GET|POST
+    controller: App\Controller\ResetPasswordController::checkEmail
+app_reset_password:
+    path: /reset/{token?}
+    controller: App\Controller\ResetPasswordController::reset

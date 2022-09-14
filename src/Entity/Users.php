@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\Validator\Constraints as SecurityAssert;
 
 /**
  * @ORM\Entity(repositoryClass=UsersRepository::class)
@@ -78,6 +79,26 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity=Orders::class, mappedBy="user_id")
      */
     private $orders;
+
+    /**
+     * @SecurityAssert\UserPassword(groups={"registration"},
+     *     message = "Wrong value for your current password!"
+     * )
+     */
+    public $oldPassword;
+
+    /**
+     * @Assert\Length(
+     *     min = 6,
+     *     minMessage = "Password should be at least 6 chars long"
+     * )
+     */
+     protected $newPassword;
+
+     /**
+      * @ORM\Column(type="boolean")
+      */
+     private $isVerified = false;
 
     public function getId(): ?int
     {
@@ -166,6 +187,20 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getNewPassword(): string
+    {
+        return $this->newPassword;
+    }
+
+    public function setNewPassword(string $newPassword): self
+    {
+        $this->newPassword = $newPassword;
+
+        return $this;
+    }
 
     /**
      * Returning a salt is only needed, if you are not using a modern
@@ -249,6 +284,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
                 $order->setAdminId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

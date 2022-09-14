@@ -19,6 +19,7 @@ class EditUsersType extends AbstractType
             ->add('email')
             ->add('phone')
             ->add('address')
+            ->add('point')
             ->add('roles', ChoiceType::class, [
                 'required' => true,
                 'multiple' => false,
