@@ -10,6 +10,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\UsersRepository;
 use App\Form\EditUsersType;
+use App\Form\ChangePasswordType;
 
 class AuthController extends AbstractController
 {
@@ -35,22 +36,46 @@ class AuthController extends AbstractController
     /**
      * @Route("/dashboard/myinfo", name="app_myinfo", methods={"GET", "POST"})
      */
-    public function edit(Request $request, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
+    public function edit(Request $request, UsersRepository $usersRepository): Response
+    {
+        $user =$this->getUser();
+
+        $form = $this->createForm(EditUsersType::class, $user,[
+            'validation_groups' => ['default'],
+        ]);
+        $form->remove('roles');
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $usersRepository->add($user, true);
+            return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('users/edit.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
+    /**
+     * @Route("/dashboard/changepassword", name="app_change_password", methods={"GET", "POST"})
+     */
+    public function changePassword(Request $request, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user =$this->getUser();
         $currentPassword = $user->getPassword();
 
-        $form = $this->createForm(EditUsersType::class, $user);
+        $form = $this->createForm(ChangePasswordType::class, $user, [
+            'validation_groups' => ['default','registration'],
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($currentPassword != $user->getPassword()) {
-                $hashedPassword = $passwordHasher->hashPassword(
-                    $user,
-                    $user->getPassword()
-                );
-                $user->setPassword($hashedPassword);
-            }
+            $newPassword = $form->getData()->getNewPassword();
+            $hashedPassword = $passwordHasher->hashPassword(
+                $user,
+                $newPassword
+            );
+            $user->setPassword($hashedPassword);
             $usersRepository->add($user, true);
             return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
         }
