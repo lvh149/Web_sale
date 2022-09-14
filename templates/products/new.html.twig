@@ -6,24 +6,90 @@
 {% block body %}
 	<h1>Thêm sản phẩm</h1>
 
-	{# {{ include('products/_form.html.twig') }} #}
-	{# ['bootstrap_4_layout.html.twig'] #}
-	{# {% form_theme form  'bootstrap_4_horizontal_layout.html.twig' %} #}
+	{% form_theme form  'bootstrap_5_layout.html.twig' %}
 	{{ form_start(form) }}
-    {# {{ form_errors(form) }} #}
-	{{ form_row(form.name) }}
-    <br>
-	<label class="col-form-label col-sm-2 required" for="products_info">Image</label>
-	<div class="col-sm-10">
-		{{ form_widget(form.image) }}
+	<div class="form-group">
+		{{ form_label(form.name) }}
+		{{ form_widget(form.name) }}
+		{% if form_errors(form.name) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.name) }}
+			</div>
+		{% endif %}
 	</div>
-	{{ form_row(form.info) }}
-	{{ form_row(form.price) }}
-	{{ form_row(form.point) }}
-	{{ form_row(form.point_give) }}
-	{{ form_row(form.category) }}
+	<br>
+	<div class="form-group">
+		{# <label class="form-label required" for="products_info">Image</label> #}
+		{{ form_label(form.image, 'Image') }}
+		<div class="col-sm-offset-3">
+			<div class="fileinput text-center fileinput-new" data-provides="fileinput">
+				<div class="fileinput-new thumbnail img-circle">
+					<img src="{{asset('uploads/images/' ~ product.image)}}" alt="...">
+				</div>
+				<div class="fileinput-preview fileinput-exists thumbnail img-circle" style=""></div>
+				<div>
+					<span class="btn btn-round btn-rose btn-file">
+						<span class="fileinput-new">Add Photo</span>
+						<span class="fileinput-exists">Change</span>
+						{{ form_widget(form.image) }}
+					</span>
+					<br>
+					<a href="#pablo" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput">
+						<i class="fa fa-times"></i>
+						Remove
+						<div class="ripple-container">
+							<div class="ripple ripple-on ripple-out" style="left: 69px; top: 12.6875px; background-color: rgb(255, 255, 255); transform: scale(15.5484);"></div>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		{{ form_label(form.info) }}
+		{{ form_widget(form.info) }}
+		{% if form_errors(form.info) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.info) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.price) }}
+		{{ form_widget(form.price) }}
+		{% if form_errors(form.price) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.price) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.point) }}
+		{{ form_widget(form.point) }}
+		{% if form_errors(form.point) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.point) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.point_give) }}
+		{{ form_widget(form.point_give) }}
+		{% if form_errors(form.point_give) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.point_give) }}
+			</div>
+		{% endif %}
+	</div>
+	{{ form_label(form.category) }}
+	{{ form_widget(form.category) }}
+	{% if form_errors(form.category) %}
+		<div class="alert alert-danger">
+			{{ form_errors(form.category) }}
+		</div>
+	{% endif %}
 	<div class="card-footer text-center">
-		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Thêm') }}</button>
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Sửa') }}</button>
 	</div>
 	{{ form_end(form) }}
 {% endblock %}

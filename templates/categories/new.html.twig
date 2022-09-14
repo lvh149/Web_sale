@@ -1,9 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Categories{% endblock %}
+{% block title %}New Categories
+{% endblock %}
 
 {% block body %}
-    <h3>Thêm danh mục</h1>
+	<h3>Thêm danh mục</h1>
 
-    {{ include('categories/_form.html.twig') }}
+	{% form_theme form  'bootstrap_5_layout.html.twig' %}
+	{{ form_start(form) }}
+	<div class="form-group">
+		{{ form_label(form.name) }}
+		{{ form_widget(form.name) }}
+		{% if form_errors(form.name) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.name) }}
+			</div>
+		{% endif %}
+	</div>
+
+	<div class="card-footer text-center">
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Thêm') }}</button>
+	</div>
+	{{ form_end(form) }}
 {% endblock %}

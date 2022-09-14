@@ -1,11 +1,68 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Users{% endblock %}
+{% block title %}New Categories
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Users</h1>
+	<h3>Thêm danh mục</h1>
 
-    {{ include('users/_form.html.twig') }}
+	{% form_theme form  'bootstrap_5_layout.html.twig' %}
+	{{ form_start(form) }}
+	<div class="form-group">
+		{{ form_label(form.name) }}
+		{{ form_widget(form.name) }}
+		{% if form_errors(form.name) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.name) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.email) }}
+		{{ form_widget(form.email) }}
+		{% if form_errors(form.email) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.email) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.password) }}
+		{{ form_widget(form.password) }}
+		{% if form_errors(form.password) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.password) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.phone) }}
+		{{ form_widget(form.phone) }}
+		{% if form_errors(form.phone) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.phone) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.address) }}
+		{{ form_widget(form.address) }}
+		{% if form_errors(form.address) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.address) }}
+			</div>
+		{% endif %}
+	</div>
+		{{ form_label(form.roles) }}
+		{{ form_widget(form.roles) }}
+		{% if form_errors(form.roles) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.roles) }}
+			</div>
+		{% endif %}
 
-    <a href="{{ path('app_users_index') }}">back to list</a>
+	<div class="card-footer text-center">
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Thêm') }}</button>
+	</div>
+	{{ form_end(form) }}
 {% endblock %}

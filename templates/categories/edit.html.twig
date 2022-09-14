@@ -1,17 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Categories
-{% endblock %}
+{% block title %}Edit Categories{% endblock %}
 
 {% block body %}
-	<h1>Sửa danh mục</h1>
+    <h1>Sửa danh mục</h1>
 
-	{# {{ include('categories/_form.html.twig', {'button_label': 'Sửa'}) }} #}
-
-	{% form_theme form  'bootstrap_4_horizontal_layout.html.twig' %}
+    {% form_theme form  'bootstrap_5_layout.html.twig' %}
 	{{ form_start(form) }}
-	{{ form_widget(form.name) }}
-	{{ form_errors(form.name) }}
+	<div class="form-group">
+		{{ form_label(form.name) }}
+		{{ form_widget(form.name) }}
+		{% if form_errors(form.name) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.name) }}
+			</div>
+		{% endif %}
+	</div>
+
 	<div class="card-footer text-center">
 		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Sửa') }}</button>
 	</div>

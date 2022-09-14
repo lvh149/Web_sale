@@ -1,11 +1,74 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Users{% endblock %}
+{% block title %}Edit Users
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Users</h1>
+	<h1>Edit Users</h1>
 
-    {{ include('users/_form.html.twig', {'button_label': 'Update'}) }}
+	{% form_theme form  'bootstrap_5_layout.html.twig' %}
+	{{ form_start(form) }}
+	<div class="form-group">
+		{{ form_label(form.name) }}
+		{{ form_widget(form.name) }}
+		{% if form_errors(form.name) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.name) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.email) }}
+		{{ form_widget(form.email) }}
+		{% if form_errors(form.email) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.email) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.phone) }}
+		{{ form_widget(form.phone) }}
+		{% if form_errors(form.phone) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.phone) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.address) }}
+		{{ form_widget(form.address) }}
+		{% if form_errors(form.address) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.address) }}
+			</div>
+		{% endif %}
+	</div>
+	{% if form.vars.value.roles[0] == "ROLE_CUSTOMER" %}
+		<div class="form-group">
+			{{ form_label(form.point) }}
+			{{ form_widget(form.point) }}
+			{% if form_errors(form.point) %}
+				<div class="alert alert-danger">
+					{{ form_errors(form.point) }}
+				</div>
+			{% endif %}
+		</div>
+	{% endif %}
+	 {% if form.vars.value.roles[0] == "ROLE_ADMIN" or form.vars.value.roles[0] == "ROLE_SUPERADMIN" %}
+		{{ form_label(form.roles) }}
+		{{ form_widget(form.roles) }}
+		{% if form_errors(form.roles) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.roles) }}
+			</div>
+		{% endif %}
+	{% endif %}
+
+	<div class="card-footer text-center">
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Sửa') }}</button>
+	</div>
+	{{ form_end(form) }}
 
 
 {% endblock %}
