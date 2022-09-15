@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Parameters{% endblock %}
+
+{% block body %}
+    <h1>Create new Parameters</h1>
+
+    {% form_theme form  'bootstrap_5_layout.html.twig' %}
+	{{ form_start(form) }}
+	<div class="form-group">
+		{{ form_label(form.name) }}
+		{{ form_widget(form.name) }}
+		{% if form_errors(form.name) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.name) }}
+			</div>
+		{% endif %}
+	</div>
+	<div class="form-group">
+		{{ form_label(form.value) }}
+		{{ form_widget(form.value) }}
+		{% if form_errors(form.value) %}
+			<div class="alert alert-danger">
+				{{ form_errors(form.value) }}
+			</div>
+		{% endif %}
+	</div>
+
+	<div class="card-footer text-center">
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Thêm') }}</button>
+	</div>
+	{{ form_end(form) }}
+{% endblock %}

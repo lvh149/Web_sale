@@ -70,9 +70,15 @@ class Products
      */
     private $ordersDetails;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProductsParameter::class, mappedBy="product", orphanRemoval=true)
+     */
+    private $parameter;
+
     public function __construct()
     {
         $this->ordersDetails = new ArrayCollection();
+        $this->parameter = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -80,12 +86,12 @@ class Products
         return $this->id;
     }
 
-    public function getCategoryId(): ?Categories
+    public function getCategory(): ?Categories
     {
         return $this->category;
     }
 
-    public function setCategoryId(?Categories $category): self
+    public function setCategory(?Categories $category): self
     {
         $this->category = $category;
 
@@ -188,6 +194,36 @@ class Products
             // set the owning side to null (unless already changed)
             if ($ordersDetail->getProductId() === $this) {
                 $ordersDetail->setProductId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ProductsParameter>
+     */
+    public function getParameter(): Collection
+    {
+        return $this->parameter;
+    }
+
+    public function addParameter(ProductsParameter $parameter): self
+    {
+        if (!$this->parameter->contains($parameter)) {
+            $this->parameter[] = $parameter;
+            $parameter->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParameter(ProductsParameter $parameter): self
+    {
+        if ($this->parameter->removeElement($parameter)) {
+            // set the owning side to null (unless already changed)
+            if ($parameter->getProduct() === $this) {
+                $parameter->setProduct(null);
             }
         }
 

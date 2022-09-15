@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block body %}
-	<h1>Thêm sản phẩm</h1>
+	<h3>Thêm sản phẩm</h3>
 
 	{% form_theme form  'bootstrap_5_layout.html.twig' %}
 	{{ form_start(form) }}
@@ -18,7 +18,8 @@
 		{% endif %}
 	</div>
 	<br>
-	<div class="form-group">
+	<div
+		class="form-group">
 		{# <label class="form-label required" for="products_info">Image</label> #}
 		{{ form_label(form.image, 'Image') }}
 		<div class="col-sm-offset-3">
@@ -88,8 +89,16 @@
 			{{ form_errors(form.category) }}
 		</div>
 	{% endif %}
+	{% for param in params %}
+		<label for="color">{{param[0].name}}</label>
+		<select name="param" id="param" multiple>
+			{% for option in param %}
+				<option value="{{option.id}}">{{option.value}}</option>
+			{% endfor %}
+		</select>
+	{% endfor %}
 	<div class="card-footer text-center">
-		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Sửa') }}</button>
+		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Thêm') }}</button>
 	</div>
 	{{ form_end(form) }}
 {% endblock %}

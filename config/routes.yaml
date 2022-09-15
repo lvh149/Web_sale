@@ -8,6 +8,12 @@ home_page:
     path: /dashboard
     # prefix: '/admin'
     controller: App\Controller\TestController::index
+client_page:
+    path: /
+    controller: App\Controller\ClientController::index
+category:
+    path: /category/{category}
+    controller: App\Controller\ClientController::category
 app_logout:
     path: /logout
     methods: GET

@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ProductsParameter index{% endblock %}
+
+{% block body %}
+    <h1>ProductsParameter index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for products_parameter in products_parameters %}
+            <tr>
+                <td>{{ products_parameter.id }}</td>
+                <td>
+                    <a href="{{ path('app_products_parameter_show', {'id': products_parameter.id}) }}">show</a>
+                    <a href="{{ path('app_products_parameter_edit', {'id': products_parameter.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_products_parameter_new') }}">Create new</a>
+{% endblock %}

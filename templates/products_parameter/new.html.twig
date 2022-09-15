@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New ProductsParameter{% endblock %}
+
+{% block body %}
+    <h1>Create new ProductsParameter</h1>
+
+    {{ include('products_parameter/_form.html.twig') }}
+
+    <a href="{{ path('app_products_parameter_index') }}">back to list</a>
+{% endblock %}

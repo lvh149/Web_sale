@@ -34,7 +34,7 @@ class AuthController extends AbstractController
         ]);
     }
     /**
-     * @Route("/dashboard/myinfo", name="app_myinfo", methods={"GET", "POST"})
+     * @Route("/myinfo", name="app_myinfo", methods={"GET", "POST"})
      */
     public function edit(Request $request, UsersRepository $usersRepository): Response
     {
@@ -44,6 +44,7 @@ class AuthController extends AbstractController
             'validation_groups' => ['default'],
         ]);
         $form->remove('roles');
+        $form->remove('point');
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -57,7 +58,7 @@ class AuthController extends AbstractController
         ]);
     }
     /**
-     * @Route("/dashboard/changepassword", name="app_change_password", methods={"GET", "POST"})
+     * @Route("/changepassword", name="app_change_password", methods={"GET", "POST"})
      */
     public function changePassword(Request $request, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
     {
@@ -80,7 +81,7 @@ class AuthController extends AbstractController
             return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('users/edit.html.twig', [
+        return $this->renderForm('users/changePassword.html.twig', [
             'user' => $user,
             'form' => $form,
         ]);

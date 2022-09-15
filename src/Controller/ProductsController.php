@@ -6,6 +6,7 @@ use App\Entity\Products;
 use App\Form\ProductsType;
 use App\Repository\ProductsRepository;
 use App\Repository\CategoriesRepository;
+use App\Repository\ParametersRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,10 +39,28 @@ class ProductsController extends AbstractController
     /**
      * @Route("/new", name="app_products_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, ProductsRepository $productsRepository, CategoriesRepository $categoriesRepository, FileUploader $fileUploader): Response
+    public function new(Request $request, ProductsRepository $productsRepository, ParametersRepository $parametersRepository, FileUploader $fileUploader): Response
     {
         $product = new Products();
-        // $categories = $categoriesRepository->findAll();
+        $parameter = $parametersRepository->findAll();
+        // dd($parameter);
+        $params = [];
+        // sap xep mang theo ten param
+        
+        $i = 0;
+        foreach ($parameter as $v) {
+            if (!isset($params[$v->getName()])) {
+                $i=0;
+                $params[$v->getName()][$i]["name"]= $v->getName();
+                $params[$v->getName()][$i]["id"]= $v->getId();
+                $params[$v->getName()][$i]["value"]= $v->getValue();
+            } else {
+                $params[$v->getName()][$i]["name"] = $v->getName();
+                $params[$v->getName()][$i]["id"]= $v->getId();
+                $params[$v->getName()][$i]["value"] = $v->getValue();
+            }
+            $i +=1;
+        }
         $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
 
@@ -51,8 +70,6 @@ class ProductsController extends AbstractController
                 $brochureFileName = $fileUploader->upload($brochureFile);
                 $product->setImage($brochureFileName);
             }
-            $categories = $categoriesRepository->find($request->request->all()['products']['category']);
-            $product->setCategoryId($categories);
             $productsRepository->add($product, true);
 
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
@@ -60,6 +77,7 @@ class ProductsController extends AbstractController
 
         return $this->renderForm('products/new.html.twig', [
             'product' => $product,
+            'params' => $params,
             'form' => $form,
         ]);
     }
@@ -80,7 +98,7 @@ class ProductsController extends AbstractController
      */
     public function edit(Request $request, Products $product, ProductsRepository $productsRepository, FileUploader $fileUploader): Response
     {
-        
+
         $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -90,9 +108,6 @@ class ProductsController extends AbstractController
                 $brochureFileName = $fileUploader->upload($brochureFile);
                 $product->setImage($brochureFileName);
             }
-            // dd($product);
-            $category = $form->get('category')->getData();
-            $product->setCategoryId($category);
             $productsRepository->add($product, true);
 
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
@@ -109,14 +124,13 @@ class ProductsController extends AbstractController
      */
     public function delete(Request $request, Products $product, ProductsRepository $productsRepository): Response
     {
-        try{
+        try {
             if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
                 $productsRepository->remove($product, true);
             }
-    
+
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
-        }
-        catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->addFlash(
                 'error',
                 'Sản phẩm đang trong giỏ hàng hoặc hóa đơn'

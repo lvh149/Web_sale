@@ -5,7 +5,6 @@
 
 {% block body %}
 	<h1>Edit Users</h1>
-
 	{% form_theme form  'bootstrap_5_layout.html.twig' %}
 	{{ form_start(form) }}
 	<div class="form-group">
@@ -44,7 +43,7 @@
 			</div>
 		{% endif %}
 	</div>
-	{% if form.vars.value.roles[0] == "ROLE_CUSTOMER" %}
+	{% if form.point is defined %}
 		<div class="form-group">
 			{{ form_label(form.point) }}
 			{{ form_widget(form.point) }}
@@ -55,7 +54,7 @@
 			{% endif %}
 		</div>
 	{% endif %}
-	 {% if form.vars.value.roles[0] == "ROLE_ADMIN" or form.vars.value.roles[0] == "ROLE_SUPERADMIN" %}
+	 {% if form.roles is defined %}
 		{{ form_label(form.roles) }}
 		{{ form_widget(form.roles) }}
 		{% if form_errors(form.roles) %}

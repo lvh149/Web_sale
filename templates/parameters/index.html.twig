@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Parameters index{% endblock %}
+
+{% block body %}
+    <h1>Parameters index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Value</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for parameter in parameters %}
+            <tr>
+                <td>{{ parameter.id }}</td>
+                <td>{{ parameter.name }}</td>
+                <td>{{ parameter.value }}</td>
+                <td>
+                    <a href="{{ path('app_parameters_show', {'id': parameter.id}) }}">show</a>
+                    <a href="{{ path('app_parameters_edit', {'id': parameter.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_parameters_new') }}">Create new</a>
+{% endblock %}

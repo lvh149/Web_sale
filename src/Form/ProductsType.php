@@ -4,16 +4,20 @@ namespace App\Form;
 
 use App\Entity\Products;
 use App\Entity\Categories;
+use App\Entity\Parameters;
+use App\Entity\ProductsParameter;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 class ProductsType extends AbstractType
 {
-    
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -21,7 +25,7 @@ class ProductsType extends AbstractType
             ->add('image', FileType::class, [
                 'label' => false,
                 'mapped' => false,
-                'required'=> false,
+                'required' => false,
                 'attr' => array('style' => 'height: 30px'),
                 'constraints' => [
                     new File([
@@ -44,14 +48,13 @@ class ProductsType extends AbstractType
                 'class' => Categories::class,
                 'choice_label' => 'name',
                 'choice_value' => 'id',
-                'mapped' => false,
+                'mapped' => true,
                 'multiple' => false,
                 'expanded' => false,
-                'data' => $options['data']->getCategoryId(),
-            ))
-        ;
+                'data' => $options['data']->getCategory(),
+            ));
     }
-    
+
 
     public function configureOptions(OptionsResolver $resolver): void
     {
