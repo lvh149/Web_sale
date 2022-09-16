@@ -30,25 +30,15 @@ class Parameters
     private $value;
 
     /**
-     * @ORM\OneToMany(targetEntity=ProductsParameter::class, mappedBy="parameter", orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity=Products::class, inversedBy="parameters")
+     * @ORM\JoinTable(name="parameters_products",  joinColumns={@ORM\JoinColumn(name="parameters_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="products_id", referencedColumnName="id")}))
      */
-    private $productsParameters;
+    private $products;
 
     public function __construct()
     {
-        $this->productsParameters = new ArrayCollection();
-    }
-
-    public function getValue(): ?string
-    {
-        return $this->value;
-    }
-
-    public function setValue(string $value): self
-    {
-        $this->value = $value;
-
-        return $this;
+        $this->products = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -68,32 +58,38 @@ class Parameters
         return $this;
     }
 
-    /**
-     * @return Collection<int, ProductsParameter>
-     */
-    public function getProductsParameters(): Collection
+    public function getValue(): ?string
     {
-        return $this->productsParameters;
+        return $this->value;
     }
 
-    public function addProductsParameter(ProductsParameter $productsParameter): self
+    public function setValue(string $value): self
     {
-        if (!$this->productsParameters->contains($productsParameter)) {
-            $this->productsParameters[] = $productsParameter;
-            $productsParameter->setParameter($this);
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Products>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProducts(Products $products): self
+    {
+        if (!$this->products->contains($products)) {
+            $this->products[] = $products;
         }
 
         return $this;
     }
 
-    public function removeProductsParameter(ProductsParameter $productsParameter): self
+    public function removeProducts(Products $products): self
     {
-        if ($this->productsParameters->removeElement($productsParameter)) {
-            // set the owning side to null (unless already changed)
-            if ($productsParameter->getParameter() === $this) {
-                $productsParameter->setParameter(null);
-            }
-        }
+        $this->product->removeElement($products);
 
         return $this;
     }

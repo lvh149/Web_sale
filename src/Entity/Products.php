@@ -64,21 +64,23 @@ class Products
      * @Assert\Type("int")
      */
     private $point_give;
-
+    //
     /**
      * @ORM\OneToMany(targetEntity=OrdersDetail::class, mappedBy="product_id")
      */
     private $ordersDetails;
 
     /**
-     * @ORM\OneToMany(targetEntity=ProductsParameter::class, mappedBy="product", orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity=Parameters::class, mappedBy="products")
      */
-    private $parameter;
+    private $parameters;
+
+
 
     public function __construct()
     {
         $this->ordersDetails = new ArrayCollection();
-        $this->parameter = new ArrayCollection();
+        $this->parameters = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -201,30 +203,37 @@ class Products
     }
 
     /**
-     * @return Collection<int, ProductsParameter>
+     * @return Collection<int, Parameters>
      */
-    public function getParameter(): Collection
+    public function getParameters(): Collection
     {
-        return $this->parameter;
+        return $this->parameters;
     }
 
-    public function addParameter(ProductsParameter $parameter): self
+
+    public function setParameters(ArrayCollection $parameters)
     {
-        if (!$this->parameter->contains($parameter)) {
-            $this->parameter[] = $parameter;
-            $parameter->setProduct($this);
+        $this->parameters = $parameters;
+
+        return $this;
+    }
+
+
+
+    public function addParameter(Parameters $parameter): self
+    {
+        if (!$this->parameters->contains($parameter)) {
+            $this->parameters[] = $parameter;
+            $parameter->addProducts($this);
         }
 
         return $this;
     }
 
-    public function removeParameter(ProductsParameter $parameter): self
+    public function removeParameter(Parameters $parameter): self
     {
-        if ($this->parameter->removeElement($parameter)) {
-            // set the owning side to null (unless already changed)
-            if ($parameter->getProduct() === $this) {
-                $parameter->setProduct(null);
-            }
+        if ($this->parameters->removeElement($parameter)) {
+            $parameter->removeProducts($this);
         }
 
         return $this;

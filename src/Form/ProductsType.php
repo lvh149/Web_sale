@@ -5,21 +5,28 @@ namespace App\Form;
 use App\Entity\Products;
 use App\Entity\Categories;
 use App\Entity\Parameters;
-use App\Entity\ProductsParameter;
+use App\Repository\ParametersRepository;
+use App\Repository\ProductsRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 
 class ProductsType extends AbstractType
 {
+    public function __construct(ParametersRepository $parametersRepository)
+    {
+        $this->parametersRepository = $parametersRepository;
+    }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $arrParam = $options['data']->getParameters()->toarray();
+        // if ($options['data']->getParameters()->toarray()) {
+        //     $arrParam = $options['data']->getParameters()->toarray();
+        // }
         $builder
             ->add('name')
             ->add('image', FileType::class, [
@@ -47,12 +54,27 @@ class ProductsType extends AbstractType
             ->add('category', EntityType::class, array(
                 'class' => Categories::class,
                 'choice_label' => 'name',
-                'choice_value' => 'id',
                 'mapped' => true,
                 'multiple' => false,
                 'expanded' => false,
-                'data' => $options['data']->getCategory(),
+                // 'data' => $options['data']->getCategory(),
+            ))
+            ->add('parameters', EntityType::class, array(
+                'class' => Parameters::class,
+                'choice_label' => 'value',
+                'mapped' => true,
+                'multiple' => true,
+                'expanded' => true,
             ));
+
+        // ->add('parameters', EntityType::class, [
+        //     'class' => Parameters::class,
+        //     'choice_label' => 'value',
+        //     'multiple' => true,
+        //     'expanded' => true,
+        //     // 'choices' =>  $this->parametersRepository->findAll(), // data get all trong db
+        //     // 'data' => $options['data']->getParameters()->toarray() // data muon checked
+        // ]);
     }
 
 

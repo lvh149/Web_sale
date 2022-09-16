@@ -14,6 +14,7 @@ class ParametersType extends AbstractType
         $builder
             ->add('name')
             ->add('value')
+            ->add('product')
         ;
     }
 

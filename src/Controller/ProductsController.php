@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Products;
+use App\Entity\Parameters;
 use App\Form\ProductsType;
 use App\Repository\ProductsRepository;
-use App\Repository\CategoriesRepository;
 use App\Repository\ParametersRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,34 +42,23 @@ class ProductsController extends AbstractController
     public function new(Request $request, ProductsRepository $productsRepository, ParametersRepository $parametersRepository, FileUploader $fileUploader): Response
     {
         $product = new Products();
-        $parameter = $parametersRepository->findAll();
-        // dd($parameter);
-        $params = [];
-        // sap xep mang theo ten param
-        
-        $i = 0;
-        foreach ($parameter as $v) {
-            if (!isset($params[$v->getName()])) {
-                $i=0;
-                $params[$v->getName()][$i]["name"]= $v->getName();
-                $params[$v->getName()][$i]["id"]= $v->getId();
-                $params[$v->getName()][$i]["value"]= $v->getValue();
-            } else {
-                $params[$v->getName()][$i]["name"] = $v->getName();
-                $params[$v->getName()][$i]["id"]= $v->getId();
-                $params[$v->getName()][$i]["value"] = $v->getValue();
-            }
-            $i +=1;
-        }
+        $parameter = new Parameters();
         $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            dd($product);
             $brochureFile = $form->get('image')->getData();
             if ($brochureFile) {
                 $brochureFileName = $fileUploader->upload($brochureFile);
                 $product->setImage($brochureFileName);
             }
+            $parameters = $product->getParameters();
+            foreach ($parameters as $parameter) {
+                $product->addParameter($parameter);
+                $parameter->addProducts($product);
+            }
+
             $productsRepository->add($product, true);
 
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
@@ -77,7 +66,6 @@ class ProductsController extends AbstractController
 
         return $this->renderForm('products/new.html.twig', [
             'product' => $product,
-            'params' => $params,
             'form' => $form,
         ]);
     }
@@ -98,15 +86,20 @@ class ProductsController extends AbstractController
      */
     public function edit(Request $request, Products $product, ProductsRepository $productsRepository, FileUploader $fileUploader): Response
     {
-
         $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
             $brochureFile = $form->get('image')->getData();
             if ($brochureFile) {
                 $brochureFileName = $fileUploader->upload($brochureFile);
                 $product->setImage($brochureFileName);
+            }
+            // removeParameter
+            $parameters = $product->getParameters();
+            
+            foreach ($parameters as $parameter) {
+                $product->addParameter($parameter);
+                $parameter->addProducts($product);
             }
             $productsRepository->add($product, true);
 

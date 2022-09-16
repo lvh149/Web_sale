@@ -89,14 +89,14 @@
 			{{ form_errors(form.category) }}
 		</div>
 	{% endif %}
-	{% for param in params %}
-		<label for="color">{{param[0].name}}</label>
-		<select name="param" id="param" multiple>
-			{% for option in param %}
-				<option value="{{option.id}}">{{option.value}}</option>
-			{% endfor %}
-		</select>
-	{% endfor %}
+	<br>
+	{{ form_label(form.parameters) }}
+	{{ form_widget(form.parameters) }}
+	{% if form_errors(form.parameters) %}
+		<div class="alert alert-danger">
+			{{ form_errors(form.parameters) }}
+		</div>
+	{% endif %}
 	<div class="card-footer text-center">
 		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Thêm') }}</button>
 	</div>

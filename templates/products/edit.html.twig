@@ -88,6 +88,13 @@
 			{{ form_errors(form.category) }}
 		</div>
 	{% endif %}
+	{{ form_label(form.parameters) }}
+	{{ form_widget(form.parameters) }}
+	{% if form_errors(form.parameters) %}
+		<div class="alert alert-danger">
+			{{ form_errors(form.parameters) }}
+		</div>
+	{% endif %}
 	<div class="card-footer text-center">
 		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Sửa') }}</button>
 	</div>
