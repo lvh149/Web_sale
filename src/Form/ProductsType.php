@@ -7,11 +7,15 @@ use App\Entity\Categories;
 use App\Entity\Parameters;
 use App\Repository\ParametersRepository;
 use App\Repository\ProductsRepository;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Validator\Constraints\File;
 
 class ProductsType extends AbstractType
@@ -62,10 +66,50 @@ class ProductsType extends AbstractType
             ->add('parameters', EntityType::class, array(
                 'class' => Parameters::class,
                 'choice_label' => 'value',
+                'group_by' => 'name',
+                'choice_attr' => function ($object, $key, $index) {
+                    return [
+                        'type' => $object->getName()
+                    ];
+                },
+
                 'mapped' => true,
                 'multiple' => true,
                 'expanded' => true,
+                'by_reference' => false,
             ));
+        // $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+        //     $form = $event->getForm();
+
+        //     /* get groups */
+        //     /* check the entity, I'm not sure, it depends on your project */
+        //     $parameters = $this->parametersRepository->createQueryBuilder('p')
+        //         ->select('p.name')
+        //         ->groupBy('p.name')
+        //         ->getQuery()
+        //         ->getResult();
+        //     /* for each group  */
+        //     foreach ($parameters as $parameter) {
+        //         $parameter=implode($parameter);
+        //         $form->add('parameters', EntityType::class, array(
+        //             'class' => Parameters::class,
+        //             'query_builder' => function (ParametersRepository $er) use ($parameter) {
+        //                 return $er->createQueryBuilder('p')
+        //                     ->where('p.name = :name')
+        //                     ->setParameter('name',  $parameter);
+        //             },
+        //             'label' => $parameter,
+        //             'choice_label' => 'value',
+        //             'mapped' => true,
+        //             'multiple' => true,
+        //             'expanded' => true,
+        //             'by_reference' => false,
+
+        //         ));
+        //     }
+        // });
+
+
 
         // ->add('parameters', EntityType::class, [
         //     'class' => Parameters::class,

@@ -35,7 +35,7 @@ class Products
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $image;
+    private $image; 
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -75,12 +75,18 @@ class Products
      */
     private $parameters;
 
+    /**
+     * @ORM\OneToMany(targetEntity=CartDetail::class, mappedBy="product", orphanRemoval=true)
+     */
+    private $cartDetail;
+
 
 
     public function __construct()
     {
         $this->ordersDetails = new ArrayCollection();
         $this->parameters = new ArrayCollection();
+        $this->cartDetail = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -234,6 +240,36 @@ class Products
     {
         if ($this->parameters->removeElement($parameter)) {
             $parameter->removeProducts($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CartDetail>
+     */
+    public function getCartDetail(): Collection
+    {
+        return $this->cartDetail;
+    }
+
+    public function addCartDetail(CartDetail $cartDetail): self
+    {
+        if (!$this->cartDetail->contains($cartDetail)) {
+            $this->cartDetail[] = $cartDetail;
+            $cartDetail->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCartDetail(CartDetail $cartDetail): self
+    {
+        if ($this->cartDetail->removeElement($cartDetail)) {
+            // set the owning side to null (unless already changed)
+            if ($cartDetail->getProduct() === $this) {
+                $cartDetail->setProduct(null);
+            }
         }
 
         return $this;

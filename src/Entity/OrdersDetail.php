@@ -40,6 +40,14 @@ class OrdersDetail
      */
     private $quantity;
 
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\NotBlank
+     * @Assert\Positive
+     * @Assert\Type("int")
+     */
+    private $price;
+
     public function getId(): ?int
     {
         return $this->id;

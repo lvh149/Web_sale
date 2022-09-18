@@ -15,7 +15,7 @@ class ProductsFixture extends Fixture
     {
         for ($i = 0; $i < 40; $i++) {
             $product = new Products();
-            $product->setCategoryId($this->getReference(CategoriesFixture::CategoryId));
+            $product->setCategory($this->getReference(CategoriesFixture::CategoryId));
             $product->setName('product '.$i);
             $product->setInfo('test');
             $product->setPrice(random_int(100, 999));

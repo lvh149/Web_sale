@@ -42,23 +42,17 @@ class ProductsController extends AbstractController
     public function new(Request $request, ProductsRepository $productsRepository, ParametersRepository $parametersRepository, FileUploader $fileUploader): Response
     {
         $product = new Products();
-        $parameter = new Parameters();
+        $attributes = $parametersRepository->findAll();
         $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            dd($product);
+            // dd($product);
             $brochureFile = $form->get('image')->getData();
             if ($brochureFile) {
                 $brochureFileName = $fileUploader->upload($brochureFile);
                 $product->setImage($brochureFileName);
             }
-            $parameters = $product->getParameters();
-            foreach ($parameters as $parameter) {
-                $product->addParameter($parameter);
-                $parameter->addProducts($product);
-            }
-
             $productsRepository->add($product, true);
 
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
@@ -84,30 +78,23 @@ class ProductsController extends AbstractController
     /**
      * @Route("/{id}/edit", name="app_products_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Products $product, ProductsRepository $productsRepository, FileUploader $fileUploader): Response
+    public function edit(Request $request, Products $products, ProductsRepository $productsRepository, FileUploader $fileUploader): Response
     {
-        $form = $this->createForm(ProductsType::class, $product);
+        $form = $this->createForm(ProductsType::class, $products);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $brochureFile = $form->get('image')->getData();
             if ($brochureFile) {
                 $brochureFileName = $fileUploader->upload($brochureFile);
-                $product->setImage($brochureFileName);
+                $products->setImage($brochureFileName);
             }
-            // removeParameter
-            $parameters = $product->getParameters();
-            
-            foreach ($parameters as $parameter) {
-                $product->addParameter($parameter);
-                $parameter->addProducts($product);
-            }
-            $productsRepository->add($product, true);
+            $productsRepository->add($products, true);
 
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('products/edit.html.twig', [
-            'product' => $product,
+            'products' => $products,
             'form' => $form,
         ]);
     }

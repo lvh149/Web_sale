@@ -100,6 +100,11 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
       */
      private $isVerified = false;
 
+     /**
+      * @ORM\OneToOne(targetEntity=Cart::class, mappedBy="customer", cascade={"persist", "remove"})
+      */
+     private $Cart;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -296,6 +301,23 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): self
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getCart(): ?Cart
+    {
+        return $this->Cart;
+    }
+
+    public function setCart(Cart $Cart): self
+    {
+        // set the owning side of the relation if necessary
+        if ($Cart->getCustomer() !== $this) {
+            $Cart->setCustomer($this);
+        }
+
+        $this->Cart = $Cart;
 
         return $this;
     }

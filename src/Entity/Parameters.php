@@ -89,7 +89,7 @@ class Parameters
 
     public function removeProducts(Products $products): self
     {
-        $this->product->removeElement($products);
+        $this->products->removeElement($products);
 
         return $this;
     }

@@ -24,7 +24,7 @@
 		<div class="col-sm-offset-3">
 			<div class="fileinput text-center fileinput-new" data-provides="fileinput">
 				<div class="fileinput-new thumbnail img-circle">
-					<img src="{{asset('uploads/images/' ~ product.image)}}" alt="...">
+					<img src="{{asset('uploads/images/' ~ products.image)}}" alt="...">
 				</div>
 				<div class="fileinput-preview fileinput-exists thumbnail img-circle" style=""></div>
 				<div>
@@ -81,6 +81,7 @@
 			</div>
 		{% endif %}
 	</div>
+	<div class="row">
 	{{ form_label(form.category) }}
 	{{ form_widget(form.category) }}
 	{% if form_errors(form.category) %}
@@ -88,13 +89,29 @@
 			{{ form_errors(form.category) }}
 		</div>
 	{% endif %}
-	{{ form_label(form.parameters) }}
-	{{ form_widget(form.parameters) }}
-	{% if form_errors(form.parameters) %}
-		<div class="alert alert-danger">
-			{{ form_errors(form.parameters) }}
+	</div>
+	<div class="row">
+		<label class="col-sm-2 label-on-right">Size</label>
+		<div class="col-sm-3">
+		{% for item in form.parameters %}
+			{% if item.vars.attr.type == "Size" %}
+				{{ form_widget(item) }}
+
+			{% endif %}
+
+		{% endfor %}
 		</div>
-	{% endif %}
+		<label class="col-sm-2 label-on-right">Color</label>
+		<div class="col-sm-3">
+		{% for item in form.parameters %}
+			{% if item.vars.attr.type == "Color" %}
+				{{ form_widget(item) }}
+
+			{% endif %}
+
+		{% endfor %}
+		</div>
+	</div>
 	<div class="card-footer text-center">
 		<button type="submit" class="btn btn-rose btn-fill">{{ button_label|default('Sửa') }}</button>
 	</div>

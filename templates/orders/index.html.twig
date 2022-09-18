@@ -3,88 +3,93 @@
 {# {% block title %}Orders index{% endblock %} #}
 
 {% block body %}
-	<div class="row">
-		<div class="col-md-12">
-			<div class="card">
-				<div class="card-content">
-					<h2>
-						{% if pager[0].getStatus() == 1 %}
-							Đơn hàng cần phê duyệt
-						{% elseif pager[0].getStatus() == 2 %}
-							Đơn hàng đã phê duyệt
-						{% else%}
-							Đơn hàng đã hủy
-						{% endif %}
-					</h2>
-					<div class="row" style="height:100%;">
-						<div class="table-responsive">
-							<table class="table">
-								<thead class="text-primary">
-									<tr>
-										<th>Id</th>
-										<th>Date</th>
-										<th>Tên khách hàng</th>
-										<th>Email</th>
-										<th>Số điện thoại</th>
-										<th>Status</th>
-										<th>Xem đơn hàng</th>
-                                        {% if pager[0].getStatus() == 1 %}
-										<th>Duyệt</th>
-                                        {% endif %}
-                                        {% if pager[0].getStatus() == 1 or pager[0].getStatus() == 2 %}
-										<th>Hủy</th>
-                                        {% endif %}
-									</tr>
-								</thead>
-								<tbody>
-									{% for order in pager %}
+	{# {% if pager.items is empty %}
+		Không có đơn hàng
+	{% else %} #}
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card">
+					<div class="card-content">
+						<h2>
+							{% if app.request.get('status') == 1 %}
+								Đơn hàng cần phê duyệt
+							{% elseif app.request.get('status') == 2 %}
+								Đơn hàng đã phê duyệt
+							{% else %}
+								Đơn hàng đã hủy
+							{% endif %}
+						</h2>
+						<div class="row" style="height:100%;">
+							<div class="table-responsive">
+								<table class="table">
+									<thead class="text-primary">
 										<tr>
-											<td>{{ order.id }}</td>
-											<td>{{ order.date ? order.date|date('Y-m-d') : '' }}</td>
-											<td>{{ order.getCustomerId().name() }}</td>
-											<td>{{ order.getCustomerId().email() }}</td>
-											<td>{{ order.getCustomerId().phone() }}</td>
-											<td>{{ order.status }}</td>
-											<td>												
-												<a href="{{ path('app_orders_detail_show', {'id': order.id}) }}">
-													<button class="btn btn-success">Xem</button>
-												</a>
-											</td>
-                                            {% if pager[0].getStatus() == 1 %}
-											<td>
-												<form method="post" action="{{ path('app_orders_update', {'id': order.id}) }}">
-													<input type="hidden" name="_token" value="{{ csrf_token('put' ~ order.id) }}">
-													<input type="hidden" name="status" value="2">
-													<button class="btn btn-success">Duyệt</button>
-												</form>
-											</td>
-                                            {% endif %}
-                                            {% if pager[0].getStatus() == 1 or pager[0].getStatus() == 2 %}
-											<td>
-												<form method="post" action="{{ path('app_orders_update', {'id': order.id}) }}">
-													<input type="hidden" name="_token" value="{{ csrf_token('put' ~ order.id) }}">
-													<input type="hidden" name="status" value="3">
-													<button class="btn btn-danger">Hủy</button>
-												</form>
-											</td>
-                                             {% endif %}
+											<th>Id</th>
+											<th>Date</th>
+											<th>Tên khách hàng</th>
+											<th>Email</th>
+											<th>Số điện thoại</th>
+											<th>Status</th>
+											<th>Xem đơn hàng</th>
+											{% if app.request.get('status') == 1 %}
+												<th>Duyệt</th>
+											{% endif %}
+											{% if app.request.get('status') == 1 or app.request.get('status') == 2 %}
+												<th>Hủy</th>
+											{% endif %}
 										</tr>
-									{% else %}
-										<tr>
-											<td colspan="4">no records found</td>
-										</tr>
-									{% endfor %}
-								</tbody>
-							</table>
-						</div>
-						<div class="navigation">
-							{{ knp_pagination_render(pager) }}
+									</thead>
+									<tbody>
+										{% for order in pager %}
+											<tr>
+												<td>{{ order.id }}</td>
+												<td>{{ order.date ? order.date|date('Y-m-d') : '' }}</td>
+												<td>{{ order.getCustomerId().name() }}</td>
+												<td>{{ order.getCustomerId().email() }}</td>
+												<td>{{ order.getCustomerId().phone() }}</td>
+												<td>{{ order.status }}</td>
+												<td>
+													<a href="{{ path('app_orders_detail_show', {'id': order.id}) }}">
+														<button class="btn btn-success">Xem</button>
+													</a>
+												</td>
+												{% if pager[0].getStatus() == 1 %}
+													<td>
+														<form method="post" action="{{ path('app_orders_update', {'id': order.id}) }}">
+															<input type="hidden" name="_token" value="{{ csrf_token('put' ~ order.id) }}">
+															<input type="hidden" name="status" value="2">
+															<button class="btn btn-success">Duyệt</button>
+														</form>
+													</td>
+												{% endif %}
+												{% if pager[0].getStatus() == 1 or pager[0].getStatus() == 2 %}
+													<td>
+														<form method="post" action="{{ path('app_orders_update', {'id': order.id}) }}">
+															<input type="hidden" name="_token" value="{{ csrf_token('put' ~ order.id) }}">
+															<input type="hidden" name="status" value="3">
+															<button class="btn btn-danger">Hủy</button>
+														</form>
+													</td>
+												{% endif %}
+											</tr>
+										{% else %}
+											<tr>
+												<td colspan="4">Ế hàng</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+							<div class="navigation">
+								{{ knp_pagination_render(pager) }}
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	{# {% endif %} #}
 {% endblock %}
 
 {% block javascripts %}
