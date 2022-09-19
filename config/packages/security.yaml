@@ -11,8 +11,8 @@ security:
                 class: App\Entity\Users
                 property: email
     role_hierarchy:
-        # ROLE_ADMIN:   
-        ROLE_SUPERADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]            
+        ROLE_ADMIN: [ROLE_CUSTOMER]
+        ROLE_SUPERADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -25,7 +25,7 @@ security:
                 # "app_login" is the name of the route created previously
                 login_path: app_login
                 check_path: app_login
-                enable_csrf: true 
+                enable_csrf: true
                 always_use_default_target_path: true
                 default_target_path: app_login
             json_login:
@@ -36,7 +36,7 @@ security:
             logout:
                 path: app_logout
                 target: app_login
-            access_denied_handler: App\Security\AccessDeniedHandler       
+            access_denied_handler: App\Security\AccessDeniedHandler
     access_control:
         # require ROLE_ADMIN for /admin*
         - { path: '^/dashboard/users/', roles: ROLE_SUPERADMIN }
@@ -49,9 +49,7 @@ security:
 
         # the 'path' value can be any valid regular expression
         # (this one will match URLs like /api/post/7298 and /api/comment/528491)
-        # - { path: ^/api/(post|comment)/\d+$, roles: ROLE_USER }    
-    
-           
+        # - { path: ^/api/(post|comment)/\d+$, roles: ROLE_USER }
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

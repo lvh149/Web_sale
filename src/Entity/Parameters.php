@@ -30,7 +30,7 @@ class Parameters
     private $value;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Products::class, inversedBy="parameters")
+     * @ORM\ManyToMany(targetEntity=Products::class, inversedBy="parameters", fetch="EAGER")
      * @ORM\JoinTable(name="parameters_products",  joinColumns={@ORM\JoinColumn(name="parameters_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="products_id", referencedColumnName="id")}))
      */

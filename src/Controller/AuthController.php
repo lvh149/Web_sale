@@ -20,7 +20,7 @@ class AuthController extends AbstractController
         if ($this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
         } else if ($this->isGranted('ROLE_CUSTOMER')) {
-            // route ...
+            return $this->redirectToRoute('client_page', [], Response::HTTP_SEE_OTHER);
         }
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -36,7 +36,7 @@ class AuthController extends AbstractController
     /**
      * @Route("/myinfo", name="app_myinfo", methods={"GET", "POST"})
      */
-    public function edit(Request $request, UsersRepository $usersRepository): Response
+    public function changeInfo(Request $request, UsersRepository $usersRepository): Response
     {
         $user =$this->getUser();
 

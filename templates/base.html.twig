@@ -40,17 +40,17 @@
 		<script src="{{ asset('js/bootstrap-datetimepicker.js') }}"></script>
 		<script>
 			$(function () {
-let path = window.location.href.split('/').slice(0, 6).join('/');
-path = path.split('?page')[0];
-path = path.split('&page')[0];
-console.log(path);
+				let path = window.location.href.split('/').slice(0, 6).join('/');
+				path = path.split('?page')[0];
+				path = path.split('&page')[0];
+				console.log(path);
 
-$('ul a').each(function () {
-if (this.href == path) {
-$(this).parent('li').addClass('active');
-}
-});
-})
+				$('ul a').each(function () {
+				if (this.href == path) {
+				$(this).parent('li').addClass('active');
+				}
+				});
+				})
 		</script>
 		{% block javascripts %}
 			{{ encore_entry_script_tags('app') }}

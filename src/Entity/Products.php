@@ -21,7 +21,7 @@ class Products
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Categories::class, inversedBy="products") 
+     * @ORM\ManyToOne(targetEntity=Categories::class, inversedBy="products")
      * @ORM\JoinColumn(nullable=false)
      */
     private $category;
@@ -35,7 +35,7 @@ class Products
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $image; 
+    private $image;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -71,7 +71,7 @@ class Products
     private $ordersDetails;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Parameters::class, mappedBy="products")
+     * @ORM\ManyToMany(targetEntity=Parameters::class, mappedBy="products", fetch="EAGER")
      */
     private $parameters;
 

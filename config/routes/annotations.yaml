@@ -1,5 +1,9 @@
-controllers:
+customer:
     resource: ../../src/Controller/
+    type: annotation
+    prefix: '/'
+Controller:
+    resource: ../../src/Controller/Admin
     type: annotation
     prefix: '/dashboard'
 

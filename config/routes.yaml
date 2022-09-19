@@ -12,8 +12,15 @@ client_page:
     path: /
     controller: App\Controller\ClientController::index
 category:
-    path: /category/{category}
+    path: /category/{category?}
     controller: App\Controller\ClientController::category
+product:
+    path: /product/{product?}
+    controller: App\Controller\ClientController::product
+app_contact:
+    path: /contact
+    methods: GET|POST
+    controller: App\Controller\ClientController::contact
 app_logout:
     path: /logout
     methods: GET
@@ -21,6 +28,14 @@ app_login:
     path: /login
     methods: GET|POST
     controller: App\Controller\AuthController::login
+app_change_info:
+    path: /change-info
+    methods: GET|POST
+    controller: App\Controller\AuthController::changeInfo
+app_change_password:
+    path: /change-password
+    methods: GET|POST
+    controller: App\Controller\AuthController::changeInfo
 app_register:
     path: /register
     methods: GET|POST
