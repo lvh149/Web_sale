@@ -49,15 +49,19 @@ class ClientController extends AbstractController
         } else {
             $product = $this->productsRepository->findAll();
         }
-        if($request->get('size')){
-            $id = $request->get('size')[0];
-            dd($id);
-            $product = $this->parametersRepository->findProduct($id);
-            dd($product);
+        if ($request->get('size')) {
+            $id = $request->get('size');
+            $product = $this->productsRepository->createQueryBuilder('t')
+                // ->select('c.id as parameters_id, t.id as products_id')
+                ->innerJoin('t.parameters', 'c')
+                ->where('c.id IN (:parameters_id)')
+                ->setParameter('parameters_id', $id)
+                ->getQuery()
+                ->getResult();
         }
         $categories = $this->categoriesRepository->findAll();
         $params = $this->parametersRepository->findAll();
-        if(!$product){
+        if (!$product) {
             // tao 1 trang k co san pham
             $referer = $request->headers->get('referer');
             return $this->redirect($referer);

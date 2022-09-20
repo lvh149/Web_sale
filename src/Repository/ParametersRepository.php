@@ -42,7 +42,7 @@ class ParametersRepository extends ServiceEntityRepository
 
     public function findProduct($parameters_id)
     {
-        $return = $this->createQueryBuilder('t')
+        return $this->createQueryBuilder('t')
             ->select('c.id as products_id, t.id as parameters')
             ->innerJoin('t.products', 'c')
             ->where('c.id = :parameters_id')

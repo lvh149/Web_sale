@@ -57,7 +57,7 @@
 					</div>
 
 					<!-- Sizes -->
-					<form method="post" action="{{ path('category', {'category' : products[0].category.getName()}) }}">
+					<form  action="{{ path('category', {'category' : products[0].category.getName()}) }}">
 						<div>
 							<div class="sidebar_title">
 								<h5>Sizes</h5>
@@ -71,9 +71,9 @@
 									</li>
 								{% endfor %}
 							</ul>
-							<input type="hidden" name="token" value="{{ csrf_token('post') }}">
+							{# <input type="hidden" name="token" value="{{ csrf_token('post') }}"> #}
 							<div class="btn">
-								<button type="submit">filter</button>
+								<button type="submit">filter</button> 
 							</div>
 						</div>
 					</form>
