@@ -72,6 +72,7 @@ class Products
 
     /**
      * @ORM\ManyToMany(targetEntity=Parameters::class, mappedBy="products", fetch="EAGER")
+     * @ORM\JoinTable(name="parameters_products")
      */
     private $parameters;
 

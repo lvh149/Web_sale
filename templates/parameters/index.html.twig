@@ -18,7 +18,6 @@
         {% for parameter in parameters %}
             <tr>
                 <td>{{ parameter.id }}</td>
-                <td>{{ parameter.name }}</td>
                 <td>{{ parameter.value }}</td>
                 <td>
                     <a href="{{ path('app_parameters_show', {'id': parameter.id}) }}">show</a>

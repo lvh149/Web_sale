@@ -64,13 +64,6 @@ class ProductsType extends AbstractType
             ->add('parameters', EntityType::class, array(
                 'class' => Parameters::class,
                 'choice_label' => 'value',
-                'group_by' => 'name',
-                'choice_attr' => function ($object, $key, $index) {
-                    return [
-                        'type' => $object->getName()
-                    ];
-                },
-
                 'mapped' => true,
                 'multiple' => true,
                 'expanded' => true,

@@ -27,13 +27,13 @@ class ClientController extends AbstractController
 
     public function index(PaginatorInterface $paginator, Request $request)
     {
-        $products = $this->productsRepository->findAll();
+        $product = $this->productsRepository->findAll();
         $categories = $this->categoriesRepository->findAll();
-        // $pagination = $paginator->paginate(
-        //     $products, /* query NOT result */
-        //     $request->query->getInt('page', 1), /*page number*/
-        //     7 /*limit per page*/
-        // );
+        $products = $paginator->paginate(
+            $product, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            20 /*limit per page*/
+        );
 
         return $this->render('client/index.html.twig', [
             'products' => $products,
@@ -41,22 +41,47 @@ class ClientController extends AbstractController
         ]);
     }
 
-    public function category(Request $request)
+    public function category(PaginatorInterface $paginator, Request $request)
     {
         if ($request->get('category')) {
             $name = $request->get('category');
-            $products = $this->productsRepository->findByNameCategory($name);
+            $product = $this->productsRepository->findByNameCategory($name);
         } else {
-            $products = $this->productsRepository->findAll();
+            $product = $this->productsRepository->findAll();
+        }
+        if($request->get('size')){
+            $id = $request->get('size')[0];
+            dd($id);
+            $product = $this->parametersRepository->findProduct($id);
+            dd($product);
         }
         $categories = $this->categoriesRepository->findAll();
         $params = $this->parametersRepository->findAll();
+        if(!$product){
+            // tao 1 trang k co san pham
+            $referer = $request->headers->get('referer');
+            return $this->redirect($referer);
+        }
+        $products = $paginator->paginate(
+            $product, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            20 /*limit per page*/
+        );
         return $this->render('client/category.html.twig', [
             'products' => $products,
             'categories' => $categories,
             'params' => $params,
         ]);
     }
+
+    /**
+     * @Route("categorya/{categorya}/{size?}", name="filter_product", methods={"GET", "POST"})
+     */
+    public function filter(Request $request)
+    {
+        dd($request);
+    }
+
     public function product(Request $request)
     {
         $product_id = $request->get('product');

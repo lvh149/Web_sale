@@ -13,6 +13,7 @@ client_page:
     controller: App\Controller\ClientController::index
 category:
     path: /category/{category?}
+    methods: GET|POST
     controller: App\Controller\ClientController::category
 product:
     path: /product/{product?}

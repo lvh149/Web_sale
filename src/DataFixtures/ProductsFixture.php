@@ -5,12 +5,13 @@ namespace App\DataFixtures;
 use App\Entity\Products;
 use App\Entity\Categories;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class ProductsFixture extends Fixture
+class ProductsFixture extends Fixture implements DependentFixtureInterface
 {
     public const ProductId = 'ProductId';
-    
+
     public function load(ObjectManager $manager): void
     {
         for ($i = 0; $i < 40; $i++) {
@@ -22,10 +23,17 @@ class ProductsFixture extends Fixture
             $product->setPoint(random_int(100, 999));
             $product->setPointGive(random_int(0, 10));
             $manager->persist($product);
+            $product->addParameter($this->getReference(ParametersFixture::ParamId));
         }
         $this->addReference(self::ProductId, $product);
         $manager->flush();
     }
-    
+
+    public function getDependencies()
+    {
+        return [
+            ParametersFixture::class,
+        ];
+    }
 
 }

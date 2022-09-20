@@ -88,4 +88,15 @@ class OrdersDetail
 
         return $this;
     }
+    public function getPrice(): ?int
+    {
+        return $this->price;
+    }
+
+    public function setPrice(int $price): self
+    {
+        $this->price = $price;
+
+        return $this;
+    }
 }

@@ -94,20 +94,7 @@
 		<label class="col-sm-2 label-on-right">Size</label>
 		<div class="col-sm-3">
 		{% for item in form.parameters %}
-			{% if item.vars.attr.type == "Size" %}
 				{{ form_widget(item) }}
-
-			{% endif %}
-
-		{% endfor %}
-		</div>
-		<label class="col-sm-2 label-on-right">Color</label>
-		<div class="col-sm-3">
-		{% for item in form.parameters %}
-			{% if item.vars.attr.type == "Color" %}
-				{{ form_widget(item) }}
-
-			{% endif %}
 
 		{% endfor %}
 		</div>

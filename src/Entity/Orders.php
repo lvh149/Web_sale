@@ -121,6 +121,17 @@ class Orders
 
         return $this;
     }
+    public function getTotalPrice(): ?int
+    {
+        return $this->total_price;
+    }
+
+    public function setTotalPrice(int $total_price): self
+    {
+        $this->total_price = $total_price;
+
+        return $this;
+    }
 
     /**
      * @return Collection<int, OrdersDetail>

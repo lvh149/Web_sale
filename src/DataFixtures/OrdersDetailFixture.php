@@ -16,14 +16,15 @@ class OrdersDetailFixture extends Fixture implements DependentFixtureInterface
             ProductsFixture::class,
         ];
     }
-    
+
     public function load(ObjectManager $manager): void
     {
         for ($i = 0; $i < 40; $i++) {
-            $orderDetail = new OrdersDetail();            
+            $orderDetail = new OrdersDetail();
             $orderDetail->setOrderId($this->getReference(OrdersFixture::OrderId));
             $orderDetail->setProductId($this->getReference(ProductsFixture::ProductId));
             $orderDetail->setQuantity(random_int(1, 10));
+            $orderDetail->setPrice(random_int(10, 100));
             $manager->persist($orderDetail);
         }
         $manager->flush();
