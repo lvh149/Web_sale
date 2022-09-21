@@ -28,14 +28,22 @@ class ResetPasswordController extends AbstractController
     private ResetPasswordHelperInterface $resetPasswordHelper;
     private EntityManagerInterface $entityManager;
 
-    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        ResetPasswordHelperInterface $resetPasswordHelper,
+        EntityManagerInterface $entityManager,
+        MailerInterface $mailer,
+        TranslatorInterface $translator,
+        UserPasswordHasherInterface $userPasswordHasher
+    ) {
         $this->resetPasswordHelper = $resetPasswordHelper;
         $this->entityManager = $entityManager;
+        $this->mailer = $mailer;
+        $this->translator = $translator;
+        $this->userPasswordHasher = $userPasswordHasher;
     }
 
-    
-    public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator): Response
+
+    public function request(Request $request): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
         $form->handleRequest($request);
@@ -43,8 +51,8 @@ class ResetPasswordController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             return $this->processSendingPasswordResetEmail(
                 $form->get('email')->getData(),
-                $mailer,
-                $translator
+                $this->mailer,
+                $this->translator
             );
         }
 
@@ -53,7 +61,7 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
-    
+
     public function checkEmail(): Response
     {
         // Generate a fake token if the user does not exist or someone hit this page directly.
@@ -67,8 +75,8 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
-    
-    public function reset(Request $request, UserPasswordHasherInterface $userPasswordHasher, TranslatorInterface $translator, string $token = null): Response
+
+    public function reset(Request $request, string $token = null): Response
     {
         if ($token) {
             // We store the token in session and remove it from the URL, to avoid the URL being
@@ -87,8 +95,8 @@ class ResetPasswordController extends AbstractController
         } catch (ResetPasswordExceptionInterface $e) {
             $this->addFlash('reset_password_error', sprintf(
                 '%s - %s',
-                $translator->trans(ResetPasswordExceptionInterface::MESSAGE_PROBLEM_VALIDATE, [], 'ResetPasswordBundle'),
-                $translator->trans($e->getReason(), [], 'ResetPasswordBundle')
+                $this->translator->trans(ResetPasswordExceptionInterface::MESSAGE_PROBLEM_VALIDATE, [], 'ResetPasswordBundle'),
+                $this->translator->trans($e->getReason(), [], 'ResetPasswordBundle')
             ));
 
             return $this->redirectToRoute('app_forgot_password_request');
@@ -103,7 +111,7 @@ class ResetPasswordController extends AbstractController
             $this->resetPasswordHelper->removeResetRequest($token);
 
             // Encode(hash) the plain password, and set it.
-            $encodedPassword = $userPasswordHasher->hashPassword(
+            $encodedPassword = $this->userPasswordHasher->hashPassword(
                 $user,
                 $form->get('plainPassword')->getData()
             );
@@ -122,7 +130,7 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
-    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer, TranslatorInterface $translator): RedirectResponse
+    private function processSendingPasswordResetEmail(string $emailFormData): RedirectResponse
     {
         $user = $this->entityManager->getRepository(Users::class)->findOneBy([
             'email' => $emailFormData,
@@ -156,10 +164,9 @@ class ResetPasswordController extends AbstractController
             ->htmlTemplate('reset_password/email.html.twig')
             ->context([
                 'resetToken' => $resetToken,
-            ])
-        ;
+            ]);
 
-        $mailer->send($email);
+        $this->mailer->send($email);
 
         // Store the token object in session for retrieval in check-email route.
         $this->setTokenObjectInSession($resetToken);

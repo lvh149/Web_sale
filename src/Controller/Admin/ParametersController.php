@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Parameters;
 use App\Form\ParametersType;
 use App\Repository\ParametersRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,28 +16,43 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ParametersController extends AbstractController
 {
+    public function __construct(
+        ParametersRepository $parametersRepository,
+        PaginatorInterface $paginatorInterface
+    ){
+        $this->paginatorInterface = $paginatorInterface;
+        $this->parametersRepository = $parametersRepository;
+    }
     /**
      * @Route("/", name="app_parameters_index", methods={"GET"})
      */
-    public function index(ParametersRepository $parametersRepository): Response
+    public function index(Request $request): Response
     {
+        $parameters = $this->categoriesRepository->findAll();
+        $pagination = $this->paginatorInterface->paginate(
+            $parameters,
+            $request->query->getInt('page', 1),
+        );
         return $this->render('parameters/index.html.twig', [
-            'parameters' => $parametersRepository->findAll(),
+            'parameters' => $pagination,
         ]);
     }
 
     /**
      * @Route("/new", name="app_parameters_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, ParametersRepository $parametersRepository): Response
+    public function new(Request $request): Response
     {
         $parameter = new Parameters();
         $form = $this->createForm(ParametersType::class, $parameter);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $parametersRepository->add($parameter, true);
-
+            $this->parametersRepository->add($parameter, true);
+            $this->addFlash(
+                'success',
+                'Thêm thành công'
+            );
             return $this->redirectToRoute('app_parameters_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -49,14 +65,17 @@ class ParametersController extends AbstractController
     /**
      * @Route("/{id}/edit", name="app_parameters_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Parameters $parameter, ParametersRepository $parametersRepository): Response
+    public function edit(Request $request, Parameters $parameter): Response
     {
         $form = $this->createForm(ParametersType::class, $parameter);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $parametersRepository->add($parameter, true);
-
+            $this->parametersRepository->add($parameter, true);
+            $this->addFlash(
+                'success',
+                'Sửa thành công'
+            );
             return $this->redirectToRoute('app_parameters_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -69,10 +88,10 @@ class ParametersController extends AbstractController
     /**
      * @Route("/{id}", name="app_parameters_delete", methods={"POST"})
      */
-    public function delete(Request $request, Parameters $parameter, ParametersRepository $parametersRepository): Response
+    public function delete(Request $request, Parameters $parameter): Response
     {
         if ($this->isCsrfTokenValid('delete'.$parameter->getId(), $request->request->get('_token'))) {
-            $parametersRepository->remove($parameter, true);
+            $this->parametersRepository->remove($parameter, true);
         }
 
         return $this->redirectToRoute('app_parameters_index', [], Response::HTTP_SEE_OTHER);

@@ -18,13 +18,21 @@ use Symfony\Component\HttpFoundation\Session\Session;
  */
 class CategoriesController extends AbstractController
 {
+    public function __construct(
+        CategoriesRepository $categoriesRepository,
+        PaginatorInterface $paginatorInterface
+    ){
+        $this->paginatorInterface = $paginatorInterface;
+        $this->categoriesRepository = $categoriesRepository;
+    }
+
     /**
      * @Route("/", name="app_categories_index", methods={"GET"})
      */
-    public function index(CategoriesRepository $categoriesRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(Request $request): Response
     {
-        $category = $categoriesRepository->findAll();
-        $pagination = $paginator->paginate(
+        $category = $this->categoriesRepository->findAll();
+        $pagination = $this->paginatorInterface->paginate(
             $category,
             $request->query->getInt('page', 1),
         );
@@ -37,15 +45,17 @@ class CategoriesController extends AbstractController
     /**
      * @Route("/new", name="app_categories_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, CategoriesRepository $categoriesRepository, ValidatorInterface $validator): Response
+    public function new(Request $request): Response
     {
         $category = new Categories();
         $form = $this->createForm(CategoriesType::class, $category);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            $categoriesRepository->add($category, true);
-
+            $this->categoriesRepository->add($category, true);
+            $this->addFlash(
+                'success',
+                'Thêm thành công'
+            );
             return $this->redirectToRoute('app_categories_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -56,26 +66,19 @@ class CategoriesController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="app_categories_show", methods={"GET"})
-     */
-    public function show(Categories $category): Response
-    {
-        return $this->render('categories/show.html.twig', [
-            'category' => $category,
-        ]);
-    }
-
-    /**
      * @Route("/{id}/edit", name="app_categories_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Categories $category, CategoriesRepository $categoriesRepository): Response
+    public function edit(Request $request, Categories $category): Response
     {
         $form = $this->createForm(CategoriesType::class, $category);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $categoriesRepository->add($category, true);
-
+            $this->categoriesRepository->add($category, true);
+            $this->addFlash(
+                'success',
+                'Sửa thành công'
+            );
             return $this->redirectToRoute('app_categories_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -88,12 +91,12 @@ class CategoriesController extends AbstractController
     /**
      * @Route("/{id}", name="app_categories_delete", methods={"POST"})
      */
-    public function delete(Request $request, Categories $category, CategoriesRepository $categoriesRepository, Session $session): Response
+    public function delete(Request $request, Categories $category): Response
     {
         try{
             if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
 
-                $categoriesRepository->remove($category, true);
+                $this->categoriesRepository->remove($category, true);
             }
             return $this->redirectToRoute('app_categories_index', [], Response::HTTP_SEE_OTHER);
         }

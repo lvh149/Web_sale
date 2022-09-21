@@ -18,19 +18,26 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ClientController extends AbstractController
 {
-    public function __construct(ProductsRepository $productsRepository, CategoriesRepository $categoriesRepository, ParametersRepository $parametersRepository, CartRepository $cartRepository)
+    public function __construct(
+        ProductsRepository $productsRepository, 
+        PaginatorInterface $paginatorInterface,
+        CategoriesRepository $categoriesRepository, 
+        ParametersRepository $parametersRepository, 
+        CartRepository $cartRepository
+    )
     {
         $this->productsRepository = $productsRepository;
         $this->categoriesRepository = $categoriesRepository;
         $this->parametersRepository = $parametersRepository;
         $this->cartRepository = $cartRepository;
+        $this->paginatorInterface = $paginatorInterface;
     }
 
-    public function index(PaginatorInterface $paginator, Request $request)
+    public function index(Request $request)
     {
         $product = $this->productsRepository->findAll();
         $categories = $this->categoriesRepository->findAll();
-        $products = $paginator->paginate(
+        $products = $this->paginatorInterface->paginate(
             $product,
             $request->query->getInt('page', 1),
             20
@@ -42,7 +49,7 @@ class ClientController extends AbstractController
         ]);
     }
 
-    public function category(PaginatorInterface $paginator, Request $request)
+    public function category(Request $request)
     {
         if ($request->get('category')) {
             $category = $request->get('category');
@@ -61,7 +68,7 @@ class ClientController extends AbstractController
             $referer = $request->headers->get('referer');
             return $this->redirect($referer);
         }
-        $products = $paginator->paginate(
+        $products = $this->paginatorInterface->paginate(
             $product,
             $request->query->getInt('page', 1),
             20
@@ -76,12 +83,12 @@ class ClientController extends AbstractController
     /**
      * @Route("/filter-product", name="filter_product", methods={"GET", "POST"})
      */
-    public function filter(Request $request, PaginatorInterface $paginator)
+    public function filter(Request $request)
     {
         $id_size = $request->get('size');
         $category = $request->get('category');
         $product = $this->productsRepository->findBySize($id_size, $category);
-        $products = $paginator->paginate(
+        $products = $this->paginatorInterface->paginate(
             $product,
             $request->query->getInt('page', 1),
             20

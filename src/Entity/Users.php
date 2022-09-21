@@ -178,6 +178,11 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique([$roles]);
     }
 
+    public function getRoleNumber()
+    {
+        return $this->roles;
+    }
+
     public function nameRoles()
     {
         $roles = $this->roles;

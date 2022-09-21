@@ -15,13 +15,18 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CartController extends AbstractController
 {
+    public function __construct(
+        CartRepository $cartRepository
+    ){
+        $this->cartRepository = $cartRepository;
+    }
     /**
      * @Route("/", name="app_cart_index", methods={"GET"})
      */
-    public function index(CartRepository $cartRepository): Response
+    public function index(): Response
     {
         return $this->render('client/cart.html.twig', [
-            'carts' => $cartRepository->findAll(),
+            'carts' => $this->cartRepository->findAll(),
         ]);
     }
 

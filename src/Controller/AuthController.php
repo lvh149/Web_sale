@@ -14,8 +14,16 @@ use App\Form\ChangePasswordType;
 
 class AuthController extends AbstractController
 {
-
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function __construct(
+        UsersRepository $usersRepository,
+        UserPasswordHasherInterface $passwordHasher,
+        AuthenticationUtils $authenticationUtils
+    ) {
+        $this->authenticationUtils = $authenticationUtils;
+        $this->passwordHasher = $passwordHasher;
+        $this->usersRepository = $usersRepository;
+    }
+    public function login(): Response
     {
         if ($this->isGranted('ROLE_ADMIN')) {
             return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
@@ -23,10 +31,10 @@ class AuthController extends AbstractController
             return $this->redirectToRoute('client_page', [], Response::HTTP_SEE_OTHER);
         }
         // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
+        $error = $this->authenticationUtils->getLastAuthenticationError();
 
         // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $lastUsername = $this->authenticationUtils->getLastUsername();
 
         return $this->render('login/index.html.twig', [
             'last_username' => $lastUsername,
@@ -36,7 +44,7 @@ class AuthController extends AbstractController
     /**
      * @Route("/myinfo", name="app_myinfo", methods={"GET", "POST"})
      */
-    public function changeInfo(Request $request, UsersRepository $usersRepository): Response
+    public function changeInfo(Request $request): Response
     {
         $user =$this->getUser();
 
@@ -48,7 +56,7 @@ class AuthController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $usersRepository->add($user, true);
+            $this->usersRepository->add($user, true);
             return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -60,7 +68,7 @@ class AuthController extends AbstractController
     /**
      * @Route("/changepassword", name="app_change_password", methods={"GET", "POST"})
      */
-    public function changePassword(Request $request, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
+    public function changePassword(Request $request): Response
     {
         $user =$this->getUser();
         $currentPassword = $user->getPassword();
@@ -72,12 +80,12 @@ class AuthController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $newPassword = $form->getData()->getNewPassword();
-            $hashedPassword = $passwordHasher->hashPassword(
+            $hashedPassword = $this->passwordHasher->hashPassword(
                 $user,
                 $newPassword
             );
             $user->setPassword($hashedPassword);
-            $usersRepository->add($user, true);
+            $this->usersRepository->add($user, true);
             return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
         }
 

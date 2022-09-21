@@ -19,13 +19,24 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class ProductsController extends AbstractController
 {
+    public function __construct(
+        ProductsRepository $productsRepository,
+        ParametersRepository $parametersRepository,
+        FileUploader $fileUploader,
+        PaginatorInterface $paginatorInterface
+    ){
+        $this->paginatorInterface = $paginatorInterface;
+        $this->productsRepository = $productsRepository;
+        $this->parametersRepository = $parametersRepository;
+        $this->fileUploader = $fileUploader;
+    }
     /**
      * @Route("/", name="app_products_index", methods={"GET"})
      */
-    public function index(ProductsRepository $productsRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(Request $request): Response
     {
-        $products = $productsRepository->findAll();
-        $pagination = $paginator->paginate(
+        $products = $this->productsRepository->findAll();
+        $pagination = $this->paginatorInterface->paginate(
             $products,
             $request->query->getInt('page', 1),
         );
@@ -37,17 +48,17 @@ class ProductsController extends AbstractController
     /**
      * @Route("/new", name="app_products_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, ProductsRepository $productsRepository, ParametersRepository $parametersRepository, FileUploader $fileUploader): Response
+    public function new(Request $request, ProductsRepository $productsRepository): Response
     {
         $product = new Products();
-        $attributes = $parametersRepository->findAll();
+        $attributes = $this->parametersRepository->findAll();
         $form = $this->createForm(ProductsType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $brochureFile = $form->get('image')->getData();
             if ($brochureFile) {
-                $brochureFileName = $fileUploader->upload($brochureFile);
+                $brochureFileName = $this->fileUploader->upload($brochureFile);
                 $product->setImage($brochureFileName);
             }
             $productsRepository->add($product, true);
@@ -65,17 +76,17 @@ class ProductsController extends AbstractController
     /**
      * @Route("/{id}/edit", name="app_products_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Products $products, ProductsRepository $productsRepository, FileUploader $fileUploader): Response
+    public function edit(Request $request, Products $products): Response
     {
         $form = $this->createForm(ProductsType::class, $products);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $brochureFile = $form->get('image')->getData();
             if ($brochureFile) {
-                $brochureFileName = $fileUploader->upload($brochureFile);
+                $brochureFileName = $this->fileUploader->upload($brochureFile);
                 $products->setImage($brochureFileName);
             }
-            $productsRepository->add($products, true);
+            $this->productsRepository->add($products, true);
 
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -89,11 +100,11 @@ class ProductsController extends AbstractController
     /**
      * @Route("/{id}", name="app_products_delete", methods={"POST"})
      */
-    public function delete(Request $request, Products $product, ProductsRepository $productsRepository): Response
+    public function delete(Request $request, Products $product): Response
     {
         try {
             if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
-                $productsRepository->remove($product, true);
+                $this->productsRepository->remove($product, true);
             }
 
             return $this->redirectToRoute('app_products_index', [], Response::HTTP_SEE_OTHER);

@@ -32,7 +32,7 @@ class UsersFixture extends Fixture
             );
             $user->setPhone('0'.random_int(100000000, 999999999));
             $user->setAddress('VN');
-            $user->setRoles(1);
+            $user->setRoles([1]);
             $user->setIsVerified(1);
             $manager->persist($user);
         }
@@ -48,7 +48,7 @@ class UsersFixture extends Fixture
             );
             $user->setPhone('0'.random_int(100000000, 999999999));
             $user->setAddress('VN');
-            $user->setRoles(0);
+            $user->setRoles([0]);
             $user->setIsVerified(1);
             $manager->persist($user);
         }
@@ -63,7 +63,7 @@ class UsersFixture extends Fixture
             );
             $user->setPhone('0'.random_int(100000000, 999999999));
             $user->setAddress('VN');
-            $user->setRoles(2);
+            $user->setRoles([2]);
             $user->setIsVerified(1);
             $manager->persist($user);
         }

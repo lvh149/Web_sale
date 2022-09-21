@@ -25,9 +25,11 @@ class EditUsersType extends AbstractType
                 'multiple' => false,
                 'expanded' => false,
                 'choices'  => [
-                    "Quản lý" => "ROLE_SUPERADMIN",
-                    "Nhân Viên" => "ROLE_ADMIN",
+                    "Quản lý" => "0",
+                    "Nhân Viên" => "1",
                 ],
+                'mapped' => true,
+                'data' => [$options['data']->getRoleNumber()],
             ])
         ;
         $builder->get('roles')

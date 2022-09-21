@@ -18,10 +18,12 @@ class UsersController extends AbstractController
 {
     public function __construct(
         UsersRepository $usersRepository,
-        PaginatorInterface $paginatorInterface
+        PaginatorInterface $paginatorInterface,
+        UserPasswordHasherInterface $passwordHasher
     ) {
         $this->usersRepository = $usersRepository;
         $this->paginatorInterface = $paginatorInterface;
+        $this->passwordHasher = $passwordHasher;
     }
     /**
      * @Route("/customer", name="app_customers_index", methods={"GET"})
@@ -41,7 +43,7 @@ class UsersController extends AbstractController
     /**
      * @Route("customer/{id}/edit", name="app_customers_edit", methods={"GET", "POST"})
      */
-    public function editCustomer(Request $request, Users $user, UsersRepository $usersRepository): Response
+    public function editCustomer(Request $request, Users $user): Response
     {
         $id = $request->get('id');
         $user = $this->usersRepository->find($id);
@@ -49,9 +51,12 @@ class UsersController extends AbstractController
         $form->remove('roles');
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            dd($page);
-            $usersRepository->add($user, true);
-            return $this->redirectToRoute('app_customers_index', ['page' => $page], Response::HTTP_SEE_OTHER);
+            $this->usersRepository->add($user, true);
+            $this->addFlash(
+                'success',
+                'Sửa thông tin thành công'
+            );
+            return $this->redirectToRoute('app_customers_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('users/edit.html.twig', [
@@ -63,10 +68,10 @@ class UsersController extends AbstractController
     /**
      * @Route("customer/{id}", name="app_customers_delete", methods={"POST"})
      */
-    public function deleteCustomer(Request $request, Users $user, UsersRepository $usersRepository): Response
+    public function deleteCustomer(Request $request, Users $user): Response
     {
         if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
-            $usersRepository->remove($user, true);
+            $this->usersRepository->remove($user, true);
         }
 
         return $this->redirectToRoute('app_customers_index', [], Response::HTTP_SEE_OTHER);
@@ -75,10 +80,10 @@ class UsersController extends AbstractController
     /**
      * @Route("/member", name="app_members_index", methods={"GET"})
      */
-    public function indexMember(UsersRepository $usersRepository, Request $request, PaginatorInterface $paginator): Response
+    public function indexMember(Request $request): Response
     {
         $member = $this->usersRepository->findBy(['roles' => [0, 1]],['id' => 'desc']);
-        $pagination = $paginator->paginate(
+        $pagination = $this->paginatorInterface->paginate(
             $member,
             $request->query->getInt('page', 1),
         );
@@ -90,7 +95,7 @@ class UsersController extends AbstractController
     /**
      * @Route("member/new", name="app_members_new", methods={"GET", "POST"})
      */
-    public function newMember(Request $request, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
+    public function newMember(Request $request): Response
     {
         $user = new Users();
         $form = $this->createForm(UsersType::class, $user);
@@ -98,12 +103,12 @@ class UsersController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setIsVerified(true);
-            $hashedPassword = $passwordHasher->hashPassword(
+            $hashedPassword = $this->passwordHasher->hashPassword(
                 $user,
                 $user->getPassword()
             );
             $user->setPassword($hashedPassword);
-            $usersRepository->add($user, true);
+            $this->usersRepository->add($user, true);
             $this->addFlash(
                 'success',
                 'Tạo nhân viên mới thành công'
@@ -122,15 +127,19 @@ class UsersController extends AbstractController
     /**
      * @Route("member/{id}/edit", name="app_members_edit", methods={"GET", "POST"})
      */
-    public function edit(Request $request, Users $user, UsersRepository $usersRepository): Response
+    public function edit(Request $request, Users $user): Response
     {
         $id = $request->get('id');
-        $user = $usersRepository->find($id);
+        $user = $this->usersRepository->find($id);
         $form = $this->createForm(EditUsersType::class, $user);
         $form->remove('point');
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $usersRepository->add($user, true);
+            $this->usersRepository->add($user, true);
+            $this->addFlash(
+                'success',
+                'Sửa thành công'
+            );
             return $this->redirectToRoute('app_members_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -143,10 +152,10 @@ class UsersController extends AbstractController
     /**
      * @Route("member/{id}", name="app_members_delete", methods={"POST"})
      */
-    public function delete(Request $request, Users $user, UsersRepository $usersRepository): Response
+    public function delete(Request $request, Users $user): Response
     {
         if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
-            $usersRepository->remove($user, true);
+            $this->usersRepository->remove($user, true);
         }
 
         return $this->redirectToRoute('app_members_index', [], Response::HTTP_SEE_OTHER);
