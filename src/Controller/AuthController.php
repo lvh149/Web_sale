@@ -47,9 +47,8 @@ class AuthController extends AbstractController
     public function changeInfo(Request $request): Response
     {
         $user =$this->getUser();
-
         $form = $this->createForm(EditUsersType::class, $user,[
-            'validation_groups' => ['default'],
+            // 'validation_groups' => ['default'],
         ]);
         $form->remove('roles');
         $form->remove('point');
@@ -57,7 +56,7 @@ class AuthController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->usersRepository->add($user, true);
-            return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_login', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('users/edit.html.twig', [
@@ -71,7 +70,6 @@ class AuthController extends AbstractController
     public function changePassword(Request $request): Response
     {
         $user =$this->getUser();
-        $currentPassword = $user->getPassword();
 
         $form = $this->createForm(ChangePasswordType::class, $user, [
             'validation_groups' => ['default','registration'],
@@ -86,7 +84,7 @@ class AuthController extends AbstractController
             );
             $user->setPassword($hashedPassword);
             $this->usersRepository->add($user, true);
-            return $this->redirectToRoute('home_page', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_login', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('users/changePassword.html.twig', [

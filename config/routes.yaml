@@ -36,7 +36,7 @@ app_change_info:
 app_change_password:
     path: /change-password
     methods: GET|POST
-    controller: App\Controller\AuthController::changeInfo
+    controller: App\Controller\AuthController::changePassword
 app_register:
     path: /register
     methods: GET|POST
