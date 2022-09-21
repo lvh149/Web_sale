@@ -16,16 +16,28 @@ use Knp\Component\Pager\PaginatorInterface;
  */
 class OrdersDetailController extends AbstractController
 {
+    /**
+     * OrdersDetailController constructor.
+     *
+     * @param OrdersDetailRepository $ordersDetailRepository
+     * @param PaginatorInterface $paginatorInterface
+     */
+    public function __construct(
+        OrdersDetailRepository $ordersDetailRepository,
+        PaginatorInterface $paginatorInterface
+    ) {
+        $this->ordersDetailRepository = $ordersDetailRepository;
+        $this->paginatorInterface = $paginatorInterface;
+    }
 
     /**
-     * @Route("/{id}", name="app_orders_detail_show", methods={"GET"}, requirements={"id":"\d+"})
+     * @Route("/{id}", name="app_orders_detail_show", requirements={"id" = "\d+"}, methods={"GET"})
      */
-    public function show(OrdersDetail $ordersDetail, OrdersDetailRepository $ordersDetailRepository, Request $request, PaginatorInterface $paginator): Response
+    public function show(Request $request): Response
     {
         $order_id= $request->get('id');
-        $orders_detail =$ordersDetailRepository->findBy(['order' => $order_id]);
-        dd($orders_detail);
-        $pagination = $paginator->paginate(
+        $orders_detail = $this->ordersDetailRepository->findBy(['order' => $order_id]);
+        $pagination = $this->paginatorInterface->paginate(
             $orders_detail, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
             7 /*limit per page*/

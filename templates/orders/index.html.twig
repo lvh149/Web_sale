@@ -30,7 +30,6 @@
 											<th>Tên khách hàng</th>
 											<th>Email</th>
 											<th>Số điện thoại</th>
-											<th>Status</th>
 											<th>Xem đơn hàng</th>
 											{% if app.request.get('status') == 1 %}
 												<th>Duyệt</th>
@@ -48,7 +47,6 @@
 												<td>{{ order.getCustomerId().name() }}</td>
 												<td>{{ order.getCustomerId().email() }}</td>
 												<td>{{ order.getCustomerId().phone() }}</td>
-												<td>{{ order.status }}</td>
 												<td>
 													<a href="{{ path('app_orders_detail_show', {'id': order.id}) }}">
 														<button class="btn btn-success">Xem</button>
