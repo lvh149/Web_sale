@@ -31,9 +31,9 @@ class ClientController extends AbstractController
         $product = $this->productsRepository->findAll();
         $categories = $this->categoriesRepository->findAll();
         $products = $paginator->paginate(
-            $product, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            20 /*limit per page*/
+            $product,
+            $request->query->getInt('page', 1),
+            20
         );
 
         return $this->render('client/index.html.twig', [
@@ -62,9 +62,9 @@ class ClientController extends AbstractController
             return $this->redirect($referer);
         }
         $products = $paginator->paginate(
-            $product, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            20 /*limit per page*/
+            $product,
+            $request->query->getInt('page', 1),
+            20
         );
         return $this->render('client/category.html.twig', [
             'products' => $products,
@@ -82,14 +82,13 @@ class ClientController extends AbstractController
         $category = $request->get('category');
         $product = $this->productsRepository->findBySize($id_size, $category);
         $products = $paginator->paginate(
-            $product, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            20 /*limit per page*/
+            $product,
+            $request->query->getInt('page', 1),
+            20
         );
         return $this->render('client/show_product.html.twig', [
             'products' => $products,
         ]);
-        // return $this->json($products);
     }
 
     public function product(Request $request)

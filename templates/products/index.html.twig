@@ -39,14 +39,14 @@
 										<td><img src="{{asset('uploads/images/' ~ product.image)}}" style="height: 100px;width:200px;" alt=""></td>
 										{% else %}
 										<td></td>
-										{% endif %} 
+										{% endif %}
 										<td>{{ product.info }}</td>
 										<td>{{ product.price }}</td>
 										<td>{{ product.point }}</td>
 										<td>{{ product.pointGive }}</td>
 										<td>
 											<a href="{{ path('app_products_edit', {'id': product.id}) }}">
-												<button class="btn btn-success">Sửa</button> 
+												<button class="btn btn-success">Sửa</button>
 											</a>
 										</td>
                                         <td>

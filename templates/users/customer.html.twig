@@ -6,13 +6,10 @@
 {% block body %}
 	<div class="row">
 		<div class="col-md-12">
-			<a href="{{ path('app_members_new') }}">
-				<button class="btn btn-success">Thêm</button>
-			</a>
 			<div class="card">
 				<div class="card-content">
 					<h2>
-						Quản lý nhân viên
+						Quản lý khách hàng
 					</h2>
 					<div class="row" style="height:100%;">
 						<table class="table">
@@ -23,7 +20,6 @@
 									<th>Email</th>
 									<th>Số điện thoại</th>
 									<th>Địa chỉ</th>
-									<th>Cấp bậc</th>
 									<th>Sửa</th>
 									<th>Xóa</th>
 								</tr>
@@ -36,14 +32,13 @@
 										<td>{{ user.email }}</td>
 										<td>{{ user.phone }}</td>
 										<td>{{ user.address }}</td>
-										<td>{{ user.nameRoles}}</td>
 										<td>
-											<a href="{{ path('app_members_edit', {'id': user.id}) }}">
+											<a href="{{ path('app_customers_edit', {'id': user.id}) }}">
 												<button class="btn btn-success">Sửa</button>
 											</a>
 										</td>
                                         <td>
-											<form method="post" action="{{ path('app_members_delete', {'id': user.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+											<form method="post" action="{{ path('app_customers_delete', {'id': user.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
 												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
 												<button class="btn btn-danger">Delete</button>
 											</form>

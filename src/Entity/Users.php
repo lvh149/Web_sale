@@ -37,15 +37,14 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email.",
      * )
-     * 
+     *
      */
-    
     private $email;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="integer")
      */
-    private $roles = [];
+    private $roles;
 
     /**
      * @var string The hashed password
@@ -56,13 +55,13 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      *      minMessage = "Your password must be at least {{ limit }} characters long",
      *      maxMessage = "Your password cannot be longer than {{ limit }} characters"
      * )
-     * 
+     *
      */
     private $password;
     /**
      * @ORM\Column(type="string", length=255,unique = true)
      * @Assert\Length(min = 8, max = 20, minMessage = "min_lenght", maxMessage = "max_lenght")
-     * @Assert\Regex(pattern="/^[0-9]*$/", message="number_only") 
+     * @Assert\Regex(pattern="/^[0-9]*$/", message="number_only")
      */
     private $phone;
 
@@ -93,17 +92,31 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      *     minMessage = "Password should be at least 6 chars long"
      * )
      */
-     protected $newPassword;
+    protected $newPassword;
 
-     /**
-      * @ORM\Column(type="boolean")
-      */
-     private $isVerified = false;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isVerified = false;
 
-     /**
-      * @ORM\OneToOne(targetEntity=Cart::class, mappedBy="customer", cascade={"persist", "remove"})
-      */
-     private $Cart;
+    /**
+     * @ORM\OneToOne(targetEntity=Cart::class, mappedBy="customer", cascade={"persist", "remove"})
+     */
+    private $Cart;
+
+    public const SUPER_ADMIN = 0;
+    public const ADMIN = 1;
+    public const CUSTOMER = 2;
+
+    public static function Role(): array
+    {
+        $arrRole = [
+            'ROLE_SUPERADMIN'  => self::SUPER_ADMIN,
+            'ROLE_ADMIN'  => self::ADMIN,
+            'ROLE_CUSTOMER'  => self::CUSTOMER,
+        ];
+        return $arrRole;
+    }
 
     public function getId(): ?int
     {
@@ -155,25 +168,27 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    public function getRoles(): array
+    public function getRoles()
     {
-        $roles = $this->roles;
-
-        return array_unique($roles);
+        foreach($this->Role() as $role => $id){
+            if($this->roles == $id){
+                $roles = $role;
+            }
+        }
+        return array_unique([$roles]);
     }
 
     public function nameRoles()
     {
         $roles = $this->roles;
-
-        $role = $roles[0] =="ROLE_CUSTOMER" ? "Khách hàng" : ($roles[0] == "ROLE_ADMIN" ? "Nhân viên" : "Quản lý");
+        $role = $roles == 2 ? "Khách hàng" : ($roles == 1 ? "Nhân viên" : "Quản lý");
 
         return $role;
     }
 
     public function setRoles(array $roles): self
     {
-        $this->roles = $roles;
+        $this->roles = $roles[0];
 
         return $this;
     }

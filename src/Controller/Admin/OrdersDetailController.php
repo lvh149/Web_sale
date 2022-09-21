@@ -38,9 +38,8 @@ class OrdersDetailController extends AbstractController
         $order_id= $request->get('id');
         $orders_detail = $this->ordersDetailRepository->findBy(['order' => $order_id]);
         $pagination = $this->paginatorInterface->paginate(
-            $orders_detail, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            7 /*limit per page*/
+            $orders_detail,
+            $request->query->getInt('page', 1),
         );
         return $this->render('orders_detail/show.html.twig', [
             'orderdetails' => $pagination,

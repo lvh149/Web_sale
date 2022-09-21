@@ -245,7 +245,7 @@
 {% block javascripts %}
 	<script src="{{asset('plugins/jquery-ui-1.12.1.custom/jquery-ui.js')}}"></script>
 	<script src="{{asset('js/categories_custom.js')}}"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="{{asset('js/jquery.ajax.js')}}"></script>
 	<script>
 		$(document).ready(function(){
 			$('#filter').on( "click", function() {

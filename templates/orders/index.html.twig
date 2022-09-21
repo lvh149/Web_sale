@@ -3,10 +3,6 @@
 {# {% block title %}Orders index{% endblock %} #}
 
 {% block body %}
-	{# {% if pager.items is empty %}
-		Không có đơn hàng
-	{% else %} #}
-
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card">
@@ -54,7 +50,7 @@
 												</td>
 												{% if pager[0].getStatus() == 1 %}
 													<td>
-														<form method="post" action="{{ path('app_orders_update', {'id': order.id}) }}">
+														<form method="post" action="{{ path('app_orders_update', {'id': order.id}) }}" onsubmit="return confirm('Bạn có chắc chắn muốn duyệt không?');">
 															<input type="hidden" name="_token" value="{{ csrf_token('put' ~ order.id) }}">
 															<input type="hidden" name="status" value="2">
 															<button class="btn btn-success">Duyệt</button>
@@ -63,7 +59,7 @@
 												{% endif %}
 												{% if pager[0].getStatus() == 1 or pager[0].getStatus() == 2 %}
 													<td>
-														<form method="post" action="{{ path('app_orders_update', {'id': order.id}) }}">
+														<form method="post" action="{{ path('app_orders_update', {'id': order.id}) }}" onsubmit="return confirm('Bạn có chắc chắn muốn hủy không?');">
 															<input type="hidden" name="_token" value="{{ csrf_token('put' ~ order.id) }}">
 															<input type="hidden" name="status" value="3">
 															<button class="btn btn-danger">Hủy</button>

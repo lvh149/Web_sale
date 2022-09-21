@@ -62,7 +62,6 @@ class Orders
      */
     private $ordersDetails;
 
-    
 
     public function __construct()
     {

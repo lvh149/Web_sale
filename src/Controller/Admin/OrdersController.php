@@ -23,13 +23,11 @@ class OrdersController extends AbstractController
     public function index(OrdersRepository $ordersRepository, Request $request, PaginatorInterface $paginator): Response
     {
         $status = $request->get('status');
-        $orders = $ordersRepository->findBy(['status' => $status],);
+        $orders = $ordersRepository->findByStatus($status);
         $pagination = $paginator->paginate(
-            $orders, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            7 /*limit per page*/
+            $orders,
+            $request->query->getInt('page', 1),
         );
-        // dd($pagination);
         return $this->render('orders/index.html.twig', [
             'pager' => $pagination,
         ]);

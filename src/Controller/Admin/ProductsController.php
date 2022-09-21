@@ -26,11 +26,9 @@ class ProductsController extends AbstractController
     {
         $products = $productsRepository->findAll();
         $pagination = $paginator->paginate(
-            $products, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            7 /*limit per page*/
+            $products,
+            $request->query->getInt('page', 1),
         );
-        // dd($pagination);
         return $this->render('products/index.html.twig', [
             'products' => $pagination,
         ]);
@@ -47,7 +45,6 @@ class ProductsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // dd($product);
             $brochureFile = $form->get('image')->getData();
             if ($brochureFile) {
                 $brochureFileName = $fileUploader->upload($brochureFile);

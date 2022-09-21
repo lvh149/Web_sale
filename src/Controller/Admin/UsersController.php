@@ -13,28 +13,74 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-/**
- * @Route("/users")
- */
+
 class UsersController extends AbstractController
 {
+    public function __construct(
+        UsersRepository $usersRepository,
+        PaginatorInterface $paginatorInterface
+    ) {
+        $this->usersRepository = $usersRepository;
+        $this->paginatorInterface = $paginatorInterface;
+    }
     /**
-     * @Route("/", name="app_users_index", methods={"GET"})
+     * @Route("/customer", name="app_customers_index", methods={"GET"})
      */
-    public function index(UsersRepository $usersRepository, Request $request, PaginatorInterface $paginator): Response
+    public function indexCustomer(Request $request): Response
     {
-        $roles = $request->get('role') == 'ROLE_CUSTOMER' ? ['ROLE_CUSTOMER'] :  ['ROLE_ADMIN', 'ROLE_SUPERADMIN'];
+        $customer = $this->usersRepository->findBy(['roles' => 2]);
+        $pagination = $this->paginatorInterface->paginate(
+            $customer,
+            $request->query->getInt('page', 1),
+        );
+        return $this->render('users/customer.html.twig', [
+            'users' => $pagination,
+        ]);
+    }
 
-        $arruser = [];
-        foreach ($roles as $role) {
-            $users = $usersRepository->findByRole($role);
-            $arruser = array_merge($arruser, $users);
+    /**
+     * @Route("customer/{id}/edit", name="app_customers_edit", methods={"GET", "POST"})
+     */
+    public function editCustomer(Request $request, Users $user, UsersRepository $usersRepository): Response
+    {
+        $id = $request->get('id');
+        $user = $this->usersRepository->find($id);
+        $form = $this->createForm(EditUsersType::class, $user);
+        $form->remove('roles');
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            dd($page);
+            $usersRepository->add($user, true);
+            return $this->redirectToRoute('app_customers_index', ['page' => $page], Response::HTTP_SEE_OTHER);
         }
-        // $test = array_merge($arruser[0],$arruser[1]);
+
+        return $this->renderForm('users/edit.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
+
+    /**
+     * @Route("customer/{id}", name="app_customers_delete", methods={"POST"})
+     */
+    public function deleteCustomer(Request $request, Users $user, UsersRepository $usersRepository): Response
+    {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
+            $usersRepository->remove($user, true);
+        }
+
+        return $this->redirectToRoute('app_customers_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * @Route("/member", name="app_members_index", methods={"GET"})
+     */
+    public function indexMember(UsersRepository $usersRepository, Request $request, PaginatorInterface $paginator): Response
+    {
+        $member = $this->usersRepository->findBy(['roles' => [0, 1]],['id' => 'desc']);
         $pagination = $paginator->paginate(
-            $arruser, /* query NOT result */
-            $request->query->getInt('page', 1), /*page number*/
-            7 /*limit per page*/
+            $member,
+            $request->query->getInt('page', 1),
         );
         return $this->render('users/index.html.twig', [
             'users' => $pagination,
@@ -42,9 +88,9 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="app_users_new", methods={"GET", "POST"})
+     * @Route("member/new", name="app_members_new", methods={"GET", "POST"})
      */
-    public function new(Request $request, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
+    public function newMember(Request $request, UsersRepository $usersRepository, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new Users();
         $form = $this->createForm(UsersType::class, $user);
@@ -58,8 +104,11 @@ class UsersController extends AbstractController
             );
             $user->setPassword($hashedPassword);
             $usersRepository->add($user, true);
-
-            return $this->redirectToRoute('app_users_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash(
+                'success',
+                'Tạo nhân viên mới thành công'
+            );
+            return $this->redirectToRoute('app_members_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('users/new.html.twig', [
@@ -69,26 +118,20 @@ class UsersController extends AbstractController
     }
 
 
+
     /**
-     * @Route("/{id}/edit", name="app_users_edit", methods={"GET", "POST"})
+     * @Route("member/{id}/edit", name="app_members_edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, Users $user, UsersRepository $usersRepository): Response
     {
         $id = $request->get('id');
         $user = $usersRepository->find($id);
-        $role = $user->getRoles()[0];
-        if ($role == 'ROLE_CUSTOMER') {
-            $form = $this->createForm(EditUsersType::class, $user);
-            $form->remove('roles');
-            $form->handleRequest($request);
-        } else {
-            $form = $this->createForm(EditUsersType::class, $user);
-            $form->remove('point');
-            $form->handleRequest($request);
-        }
+        $form = $this->createForm(EditUsersType::class, $user);
+        $form->remove('point');
+        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $usersRepository->add($user, true);
-            return $this->redirectToRoute('app_users_index', ['role' => $role], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_members_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('users/edit.html.twig', [
@@ -98,7 +141,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="app_users_delete", methods={"POST"})
+     * @Route("member/{id}", name="app_members_delete", methods={"POST"})
      */
     public function delete(Request $request, Users $user, UsersRepository $usersRepository): Response
     {
@@ -106,6 +149,6 @@ class UsersController extends AbstractController
             $usersRepository->remove($user, true);
         }
 
-        return $this->redirectToRoute('app_users_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_members_index', [], Response::HTTP_SEE_OTHER);
     }
 }
