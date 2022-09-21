@@ -47,16 +47,6 @@ class ParametersController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="app_parameters_show", methods={"GET"})
-     */
-    public function show(Parameters $parameter): Response
-    {
-        return $this->render('parameters/show.html.twig', [
-            'parameter' => $parameter,
-        ]);
-    }
-
-    /**
      * @Route("/{id}/edit", name="app_parameters_edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, Parameters $parameter, ParametersRepository $parametersRepository): Response

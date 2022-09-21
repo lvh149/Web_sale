@@ -64,16 +64,6 @@ class ProductsController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/{id}", name="app_products_show", methods={"GET"})
-     */
-    public function show(Products $product): Response
-    {
-        // dd($product->getCategoryId());
-        return $this->render('products/show.html.twig', [
-            'product' => $product,
-        ]);
-    }
 
     /**
      * @Route("/{id}/edit", name="app_products_edit", methods={"GET", "POST"})

@@ -48,7 +48,7 @@
 							<h5>Filter by Price</h5>
 						</div>
 						<p>
-							<input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+							<input type="text" id="amount" name="price" readonly style="border:0; color:#f6931f; font-weight:bold;">
 						</p>
 						<div id="slider-range"></div>
 						<div class="filter_button">
@@ -57,7 +57,7 @@
 					</div>
 
 					<!-- Sizes -->
-					<form  action="{{ path('category', {'category' : products[0].category.getName()}) }}">
+					{# <form  action="{{ path('category', {'category' : products[0].category.getName()}) }}"> #}
 						<div>
 							<div class="sidebar_title">
 								<h5>Sizes</h5>
@@ -66,17 +66,16 @@
 								{% for param in params %}
 									<li>
 										{# <i class="fa fa-square-o" aria-hidden="true"></i> #}
-										<input type="checkbox" name="size[]" value="{{param.id}}">
+										<input type="checkbox" class="size-checkbox" name="size[]" value="{{param.id}}">
 										<span>{{param.value}}</span>
 									</li>
 								{% endfor %}
 							</ul>
-							{# <input type="hidden" name="token" value="{{ csrf_token('post') }}"> #}
 							<div class="btn">
-								<button type="submit">filter</button> 
+								<button id="filter" type="submit">filter</button>
 							</div>
 						</div>
-					</form>
+					{# </form> #}
 				</div>
 
 				<!-- Main Content -->
@@ -153,40 +152,35 @@
 									</div>
 
 								</div>
-
-								<!-- Product Grid -->
-
-								<div
-									class="product-grid">
-
-									<!-- Product 1 -->
-									{% for product in products %}
-										<div class="product-item {{product.category.getId()}}">
-											<div class="product discount product_filter">
-												<div class="product_image">
-													<img src="{{asset('uploads/images/' ~ product.image)}}" alt="">
-												</div>
-												<div class="favorite favorite_left"></div>
-												<div class="product_info">
-													<h6 class="product_name">
-														<a href="single.html">{{product.name}}</a>
-													</h6>
-													<div class="product_price">${{product.price}}
+								<div id="show_product">
+									<!-- Product Grid -->
+									<div class="product-grid">
+										<!-- Product 1 -->
+										{% for product in products %}
+											<div class="product-item {{product.category.getId()}}">
+												<div class="product discount product_filter">
+													<div class="product_image">
+														<img src="{{asset('uploads/images/' ~ product.image)}}" alt="">
+													</div>
+													<div class="favorite favorite_left"></div>
+													<div class="product_info">
+														<h6 class="product_name">
+															<a href="single.html">{{product.name}}</a>
+														</h6>
+														<div class="product_price">${{product.price}}
+														</div>
 													</div>
 												</div>
+												<div class="red_button add_to_cart_button">
+													<a href="#">add to cart</a>
+												</div>
 											</div>
-											<div class="red_button add_to_cart_button">
-												<a href="#">add to cart</a>
-											</div>
-										</div>
-									{% endfor %}
-
-
+										{% endfor %}
+									</div>
+									<div class="navigation">
+										{{ knp_pagination_render(products) }}
+									</div>
 								</div>
-								<div class="navigation">
-									{{ knp_pagination_render(products) }}
-								</div>
-
 								<!-- Product Sorting -->
 
 								<div class="product_sorting_container product_sorting_container_bottom clearfix">
@@ -251,4 +245,28 @@
 {% block javascripts %}
 	<script src="{{asset('plugins/jquery-ui-1.12.1.custom/jquery-ui.js')}}"></script>
 	<script src="{{asset('js/categories_custom.js')}}"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$('#filter').on( "click", function() {
+				var size = [];
+				$('.size-checkbox:checked').each(function(i){
+				size[i] = $(this).val();
+				});
+				var category = {{products[0].category.getId()}};
+				$.ajax({
+					url: "{{ (path('filter_product')) }}",
+					type: 'GET',
+					data: {
+						'size': size,
+						'category': category,
+					},
+					async: true,
+					complete: function (data) {
+						$('#show_product').html(data.responseText);
+					}
+				});
+			})
+		})
+	</script>
 {% endblock %}

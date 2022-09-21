@@ -40,27 +40,42 @@ class ProductsRepository extends ServiceEntityRepository
         }
     }
 
-   /**
-    * @return Products[] Returns an array of Products objects
-    */
-   public function findByNameCategory($name): array
-   {
-       return $this->createQueryBuilder('p')
-            ->join('p.category', 'u' )
+    /**
+     * @return Products[] Returns an array of Products objects
+     */
+    public function findByNameCategory($name): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.category', 'u')
             ->where('u.name = :name')
             ->setParameter('name', $name)
-           ->getQuery()
-           ->getResult()
-       ;
-   }
+            ->getQuery()
+            ->getResult();
+    }
+    /**
+     * @return Products[] Returns an array of Products objects
+     */
+    public function findBySize($id,$category): array
+    {
+        return $this->createQueryBuilder('t')
+        // ->select('c.id as parameters_id, t.id as products_id')
+        ->innerJoin('t.parameters', 'p')
+        ->where('p.id IN (:parameters_id)')
+        ->setParameter('parameters_id', $id)
+        ->innerJoin('t.category', 'c')
+        ->andwhere('c.id = :category_id')
+        ->setParameter('category_id', $category)
+        ->getQuery()
+        ->getResult();
+    }
 
-//    public function findOneBySomeField($value): ?Products
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    //    public function findOneBySomeField($value): ?Products
+    //    {
+    //        return $this->createQueryBuilder('p')
+    //            ->andWhere('p.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

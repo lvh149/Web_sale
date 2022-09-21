@@ -13,6 +13,7 @@ use App\Repository\ParametersRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 class ClientController extends AbstractController
@@ -44,20 +45,14 @@ class ClientController extends AbstractController
     public function category(PaginatorInterface $paginator, Request $request)
     {
         if ($request->get('category')) {
-            $name = $request->get('category');
-            $product = $this->productsRepository->findByNameCategory($name);
+            $category = $request->get('category');
+            $product = $this->productsRepository->findByNameCategory($category);
         } else {
             $product = $this->productsRepository->findAll();
         }
         if ($request->get('size')) {
             $id = $request->get('size');
-            $product = $this->productsRepository->createQueryBuilder('t')
-                // ->select('c.id as parameters_id, t.id as products_id')
-                ->innerJoin('t.parameters', 'c')
-                ->where('c.id IN (:parameters_id)')
-                ->setParameter('parameters_id', $id)
-                ->getQuery()
-                ->getResult();
+            $product = $this->productsRepository->findBySize($id,$category);
         }
         $categories = $this->categoriesRepository->findAll();
         $params = $this->parametersRepository->findAll();
@@ -79,11 +74,22 @@ class ClientController extends AbstractController
     }
 
     /**
-     * @Route("categorya/{categorya}/{size?}", name="filter_product", methods={"GET", "POST"})
+     * @Route("/filter-product", name="filter_product", methods={"GET", "POST"})
      */
-    public function filter(Request $request)
+    public function filter(Request $request, PaginatorInterface $paginator)
     {
-        dd($request);
+        $id_size = $request->get('size');
+        $category = $request->get('category');
+        $product = $this->productsRepository->findBySize($id_size, $category);
+        $products = $paginator->paginate(
+            $product, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            20 /*limit per page*/
+        );
+        return $this->render('client/show_product.html.twig', [
+            'products' => $products,
+        ]);
+        // return $this->json($products);
     }
 
     public function product(Request $request)
