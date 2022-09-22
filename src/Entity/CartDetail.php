@@ -18,7 +18,7 @@ class CartDetail
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Cart::class, inversedBy="product")
+     * @ORM\ManyToOne(targetEntity=Cart::class, inversedBy="cartDetail", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
      */
     private $cart;
@@ -59,7 +59,6 @@ class CartDetail
     public function setProduct(?Products $product): self
     {
         $this->product = $product;
-
         return $this;
     }
 

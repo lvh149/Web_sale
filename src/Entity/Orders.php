@@ -37,12 +37,6 @@ class Orders
     private $customer;
 
     /**
-     * @ORM\Column(type="date")
-     * @Assert\Date
-     */
-    private $date;
-
-    /**
      * @ORM\Column(type="smallint")
      * @Assert\NotBlank
      */
@@ -93,18 +87,6 @@ class Orders
     public function setCustomerId(?Users $user): self
     {
         $this->customer = $user;
-
-        return $this;
-    }
-
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(\DateTimeInterface $date): self
-    {
-        $this->date = $date;
 
         return $this;
     }

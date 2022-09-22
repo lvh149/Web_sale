@@ -63,11 +63,41 @@ class ProductsRepository extends ServiceEntityRepository
         ->where('p.id IN (:parameters_id)')
         ->setParameter('parameters_id', $id)
         ->innerJoin('t.category', 'c')
-        ->andwhere('c.id = :category_id')
-        ->setParameter('category_id', $category)
+        ->andwhere('c.name = :category')
+        ->setParameter('category', $category)
         ->getQuery()
         ->getResult();
     }
+
+    public function findAllGreaterThanPrice(int $price)
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT * FROM product p
+            WHERE p.price > :price
+            ORDER BY p.price ASC
+            ';
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery(['price' => $price]);
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $resultSet->fetchAllAssociative();
+    }
+
+    public function checkParameterProducts($product_id,$parameter_id)
+    {
+        return $this->createQueryBuilder('t')
+        // ->select('c.id as parameters_id, t.id as products_id')
+        ->innerJoin('t.parameters', 'p')
+        ->where('p.id = (:parameters_id)')
+        ->setParameter('parameters_id', $parameter_id)
+        ->andwhere('t.id = :product_id')
+        ->setParameter('product_id', $product_id)
+        ->getQuery()
+        ->getResult();
+    }
+
 
     //    public function findOneBySomeField($value): ?Products
     //    {

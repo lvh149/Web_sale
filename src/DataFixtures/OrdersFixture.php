@@ -17,7 +17,6 @@ class OrdersFixture extends Fixture implements DependentFixtureInterface
             $order = new Orders();
             $order->setAdminId($this->getReference(UsersFixture::AdminId));
             $order->setCustomerId($this->getReference(UsersFixture::CustomerId));
-            $order->setDate(\DateTime::createFromFormat('Y-m-d', "2022-09-07"));
             $order->setStatus(random_int(1, 3));
             $order->setTotalPrice(random_int(100, 1000));
             $manager->persist($order);

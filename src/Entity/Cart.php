@@ -26,7 +26,7 @@ class Cart
     private $customer;
 
     /**
-     * @ORM\OneToMany(targetEntity=CartDetail::class, mappedBy="cart", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=CartDetail::class, mappedBy="cart", fetch="EAGER", orphanRemoval=true)
      */
     private $cartDetail;
 

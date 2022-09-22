@@ -7,6 +7,12 @@
 {% endblock %}
 {% block javascripts %}
 	<script src="{{asset('js/single_custom.js')}}"></script>
+	<script type="text/javascript">
+	$(document).on('click','.minus, .plus',function(){
+    	document.getElementById('quantity').value = document.getElementById('quantity_value').innerHTML;
+});
+
+</script>
 {% endblock %}
 
 {% block body %}
@@ -83,9 +89,10 @@
 						<div class="product_color">
 							<span>Select Size:</span><br>
 							{% for color in product.parameters %}
-									<input type="radio" name="size" value="{{color.id}}">
+									<input type="radio" name="parameter_id" value="{{color.id}}">
 									<label for="html">{{color.value}}</label><br>
 							{% endfor %}
+							<input type="hidden" name="product_id" value="{{product.id}}"
 						</div>
 						<div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
 							<span>Quantity:</span>
@@ -98,6 +105,7 @@
 									<i class="fa fa-plus" aria-hidden="true"></i>
 								</span>
 							</div>
+							<input type="hidden" id="quantity" name="quantity" value="1">
 							<button type="submit" class="red_button add_to_cart_button">
 								Add to card
 							</button>
