@@ -60,15 +60,15 @@ class ProductsType extends AbstractType
                 'multiple' => false,
                 'expanded' => false,
                 // 'data' => $options['data']->getCategory(),
-            ))
-            ->add('parameters', EntityType::class, array(
-                'class' => Parameters::class,
-                'choice_label' => 'value',
-                'mapped' => true,
-                'multiple' => true,
-                'expanded' => true,
-                'by_reference' => false,
             ));
+            // ->add('parameters', EntityType::class, array(
+            //     'class' => Parameters::class,
+            //     'choice_label' => 'value',
+            //     'mapped' => true,
+            //     'multiple' => true,
+            //     'expanded' => true,
+            //     'by_reference' => false,
+            // ));
         // $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
         //     $form = $event->getForm();
 

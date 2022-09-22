@@ -42,13 +42,13 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     private $email;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $roles;
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      *  * @Assert\Length(
      *      min = 6,
      *      max = 250,
@@ -273,9 +273,19 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getPoint(): ?int
     {
+        if($this->point == null){
+            $this->point = 0;
+        }
         return $this->point;
     }
 
+    public function addPoint(?int $point): self
+    {
+        $this->point = $this->getPoint();
+        $this->point += $point;
+
+        return $this;
+    }
     public function setPoint(?int $point): self
     {
         $this->point = $point;

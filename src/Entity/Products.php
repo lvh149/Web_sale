@@ -66,7 +66,7 @@ class Products
     private $point_give;
     //
     /**
-     * @ORM\OneToMany(targetEntity=OrdersDetail::class, mappedBy="product_id")
+     * @ORM\OneToMany(targetEntity=OrdersDetail::class, mappedBy="products")
      */
     private $ordersDetails;
 

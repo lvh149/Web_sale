@@ -30,7 +30,7 @@ class OrdersDetail
      * @ORM\JoinColumn(nullable=false)
      * @Assert\NotBlank
      */
-    private $product;
+    private $products;
 
     /**
      * @ORM\Column(type="integer")
@@ -67,12 +67,12 @@ class OrdersDetail
 
     public function getProductId(): ?Products
     {
-        return $this->product;
+        return $this->products;
     }
 
-    public function setProductId(?Products $product): self
+    public function setProductId(?Products $products): self
     {
-        $this->product = $product;
+        $this->products = $products;
 
         return $this;
     }

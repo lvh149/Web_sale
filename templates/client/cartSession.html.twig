@@ -53,7 +53,17 @@
 
 				});
 			});
-		})
+            $(".karl-checkout-btn").click(function(e){                
+                var r = confirm(" Bạn có muốn tạo tài khoản không?");
+                if (r == true) {
+                    e.preventDefault();
+                    window.location.href = '/register';
+                } else {
+                    return true;
+                    
+                }
+		    })
+        })
 	</script>
 {% endblock %}
 {% block body %}
@@ -77,7 +87,7 @@
 									</tr>
 								</thead>
 								<tbody>
-									{% for cartDetail in cartDetails %}
+									{% for cartDetail in app.session.get('cart') %}
 										<tr>
 											<td class="cart_product_img d-flex align-items-center">
 												<a href="#"><img src="img/product-img/product-9.jpg" alt="Product"></a>
@@ -131,14 +141,45 @@
 							<div class="cart-page-heading">
 								<h5>Cart total</h5>
 							</div>
-
 							<ul class="cart-total-chart">
-							<li>
+								<li>
+									<span>
+										<strong>Customer's Name</strong>
+									</span>
+									<span >
+										<strong><input type="text" name="name_customer"></strong>
+									</span>
+								</li>
+								<li>
+									<span>
+										<strong>Email</strong>
+									</span>
+									<span >
+										<strong><input type="text" name="email_customer"></strong>
+									</span>
+								</li>
+								<li>
+									<span>
+										<strong>Phone</strong>
+									</span>
+									<span >
+										<strong><input type="text" name="phone_customer"></strong>
+									</span>
+								</li>
+								<li>
+									<span>
+										<strong>Address</strong>
+									</span>
+									<span >
+										<strong><input type="text" name="address_customer"></strong>
+									</span>
+								</li>
+								<li>
 									<span>
 										<strong>Receiver's Name</strong>
 									</span>
 									<span >
-										<strong><input type="text" name="name_receiver" value="{{app.user.name}}" ></strong>
+										<strong><input type="text" name="name_receiver"></strong>
 									</span>
 								</li>
 								<li>
@@ -146,7 +187,7 @@
 										<strong>Receiver's Phone</strong>
 									</span>
 									<span >
-										<strong><input type="text" name="phone_receiver" value="{{app.user.phone}}"></strong>
+										<strong><input type="text" name="phone_receiver"></strong>
 									</span>
 								</li>
 								<li>
@@ -154,20 +195,9 @@
 										<strong>Receiver's Address</strong>
 									</span>
 									<span >
-										<strong><input type="text" name="address_receiver" value="{{app.user.address}}"></strong>
+										<strong><input type="text" name="address_receiver"></strong>
 									</span>
 								</li>
-								{% if app.user.point != null %}
-								
-								<li>
-									<span>
-										<strong>Use Point</strong>
-									</span>
-									<span >
-										<strong><input type="text" name="point" value="{{app.user.point}}"></strong>
-									</span>
-								</li>
-								{% endif %}
 								<li>
 									<span>
 										<strong>Total</strong>

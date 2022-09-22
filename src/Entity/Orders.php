@@ -55,6 +55,24 @@ class Orders
      * @ORM\OneToMany(targetEntity=OrdersDetail::class, mappedBy="order_id")
      */
     private $ordersDetails;
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\NotNull
+     */
+    private $name_receiver;
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\Length(min = 8, max = 20, minMessage = "min_lenght", maxMessage = "max_lenght")
+     * @Assert\Regex(pattern="/^[0-9]*$/", message="number_only")
+     */
+    private $phone_receiver;
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\NotNull
+     */
+    private $address_receiver;
 
 
     public function __construct()
@@ -140,6 +158,40 @@ class Orders
                 $ordersDetail->setOrderId(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNameReceiver(): ?int
+    {
+        return $this->name_receiver;
+    }
+
+    public function setNameReceiver(string $name_receiver): self
+    {
+        $this->name_receiver = $name_receiver;
+
+        return $this;
+    }
+    public function getPhoneReceiver(): ?int
+    {
+        return $this->phone_receiver;
+    }
+
+    public function setPhoneReceiver(string $phone_receiver): self
+    {
+        $this->phone_receiver = $phone_receiver;
+
+        return $this;
+    }
+    public function getAddressReceiver(): ?int
+    {
+        return $this->address_receiver;
+    }
+
+    public function setAddressReceiver(string $address_receiver): self
+    {
+        $this->address_receiver = $address_receiver;
 
         return $this;
     }

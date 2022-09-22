@@ -39,7 +39,7 @@
 										{% for order in pager %}
 											<tr>
 												<td>{{ order.id }}</td>
-												<td>{{ order.date ? order.date|date('Y-m-d') : '' }}</td>
+												<td>{{ order.createdAt ? order.createdAt|date('Y-m-d') : '' }}</td>
 												<td>{{ order.getCustomerId().name() }}</td>
 												<td>{{ order.getCustomerId().email() }}</td>
 												<td>{{ order.getCustomerId().phone() }}</td>
