@@ -11,17 +11,40 @@
 			getTotal();
 			$(document).on('click','.test1, .test3',function(){
 				let price = $(this).parents('tr').find('.price').text();
+				let point = $(this).parents('tr').find('.point').text();
 				let quantity = $(this).parents('tr').find('.qty-text').val();
-				let sum = price * quantity;
-				$(this).parents('tr').find('.total_price').text(sum);
+				let sum_price = price * quantity;
+				let sum_point = point * quantity;
+				$(this).parents('tr').find('.total_price').text(sum_price);
+				$(this).parents('tr').find('.total_point').text(sum_point);
 				getTotal();
 			})
 			function getTotal(){
-				let total =0;
+				let total_price =0;
+				let total_point =0;
 				$(".total_price").each(function() {
-					total += parseFloat($(this).text());
+					total_price += parseFloat($(this).text());
 				});
-				$('#all_price').text(total);
+				$(".total_point").each(function() {
+					total_point += parseFloat($(this).text());
+				});
+				$('#all_price').text(total_price);
+				$('#all_point').text(total_point);
+			}
+			function updateCart(){
+				let quantity = {};
+				let product_id = [];
+				$(".qty-text").each(function() {
+					quantity[$(this).data('id')] = $(this).val();
+				});
+				$.ajax({
+					url: "{{path('update_cart')}}",
+					type: 'GET',
+					data: {quantity},
+				})
+				.done(function() {
+					return true;
+				});
 			}
 			$('.btn-delete-item').click(function(){
 				let btn = $(this);
@@ -38,21 +61,30 @@
 				});
 			});
 			$('#update_cart').click(function(){
-				let quantity = {};
-				let product_id = [];
-				$(".qty-text").each(function() {
-					quantity[$(this).data('id')] = $(this).val();
-				});
+				updateCart();
+			});
+			$('#clear_cart').click(function(){
+				let clear = "clear";
 				$.ajax({
-					url: "{{path('update_cart')}}",
+					url: "{{path('delete_cart')}}",
 					type: 'GET',
-					data: {quantity},
+					data: {clear},
 				})
 				.done(function() {
-					
+					$('#table_cart > tbody').empty();
+					getTotal();
 
 				});
 			});
+			$(".karl-checkout-btn").click(function(e){
+				updateCart();
+                var r = confirm(" Bạn chắc chưa?");
+                if (r == true) {
+                    return true;
+                } else {
+                    return false;
+                }
+		    })
 		})
 	</script>
 {% endblock %}
@@ -65,13 +97,16 @@
 				<div class="row">
 					<div class="col-12">
 						<div class="cart-table clearfix">
-							<table class="table table-responsive">
+							<table class="table table-responsive" id="table_cart">
 								<thead>
 									<tr>
 										<th>Product</th>
 										<th>Price</th>
+										<th>Point</th>
+										<th>Point Give</th>
 										<th>Quantity</th>
-										<th>Total</th>
+										<th>Total Price</th>
+										<th>Total Point</th>
 										<th>Delete</th>
 
 									</tr>
@@ -86,6 +121,12 @@
 											<td class="price">
 												<span>{{cartDetail.product.getPrice()}}</span>
 											</td>
+											<td class="point">
+												<span>{{cartDetail.product.Point()}}</span>
+											</td>
+											<td class="point-give">
+												<span>{{cartDetail.product.PointGive() ?? 0}}</span>
+											</td>
 											<td class="qty">
 												<div class="quantity">
 													<span class="qty-minus test1" onclick="var effect = document.getElementById('qty{{cartDetail.product.getId()}}'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;">
@@ -99,6 +140,9 @@
 											</td>
 											<td class="total_price">
 												<span >{{cartDetail.product.getPrice() * cartDetail.quantity}}</span>
+											</td>
+											<td class="total_point">
+												<span >{{cartDetail.product.getPoint() * cartDetail.quantity}}</span>
 											</td>
 											<td>
 												<button type="button" class="btn btn-danger btn-delete-item" data-id='{{cartDetail.product.getId()}}'>Delete</button>
@@ -115,7 +159,9 @@
 								<a href="{{path('client_page')}}">Continue shooping</a>
 							</div>
 							<div class="update-checkout w-50 text-right">
-							<a href="#">clear cart</a>
+							<a href="#">
+								<div id="clear_cart">clear cart</div>
+							</a>
 							<a href="#">
 								<div id="update_cart">Update cart</div>
 							</a>
@@ -131,14 +177,20 @@
 							<div class="cart-page-heading">
 								<h5>Cart total</h5>
 							</div>
-
+							{% for error in app.session.getFlashBag.get('error') %}
+								<div class="col-12">
+									<div class="alert alert-danger">
+										{{ error}}
+									</div>
+								</div>
+							{% endfor %}
 							<ul class="cart-total-chart">
-							<li>
+								<li>
 									<span>
 										<strong>Receiver's Name</strong>
 									</span>
 									<span >
-										<strong><input type="text" name="name_receiver" value="{{app.user.name}}" ></strong>
+										<strong><input type="text" name="name_receiver" value="{{app.session.getFlashBag.get('name_receiver') ?? app.user.name}}" ></strong>
 									</span>
 								</li>
 								<li>
@@ -157,20 +209,25 @@
 										<strong><input type="text" name="address_receiver" value="{{app.user.address}}"></strong>
 									</span>
 								</li>
-								{% if app.user.point != null %}
-								
 								<li>
 									<span>
-										<strong>Use Point</strong>
+										<strong>Your Point</strong>
 									</span>
 									<span >
-										<strong><input type="text" name="point" value="{{app.user.point}}"></strong>
+										<strong>{{app.user.point}}</strong>
 									</span>
 								</li>
-								{% endif %}
 								<li>
 									<span>
-										<strong>Total</strong>
+										<strong>Total point</strong>
+									</span>
+									<span id="all_point">
+										<strong></strong>
+									</span>
+								</li>
+								<li>
+									<span>
+										<strong>Total price</strong>
 									</span>
 									<span id="all_price">
 										<strong></strong>

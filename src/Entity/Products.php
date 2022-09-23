@@ -44,8 +44,7 @@ class Products
     private $info;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Assert\NotBlank
+     * @ORM\Column(type="integer", nullable=true)
      * @Assert\Positive
      * @Assert\Type("int")
      */

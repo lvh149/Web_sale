@@ -70,6 +70,7 @@
 						<!-- Product 1 -->
 						{% for product in products %}
 							<div class="product-item {{product.category.getId()}}">
+								<a href="{{path('product', {'product' : product.id})}}">
 								<div class="product discount product_filter">
 									<div class="product_image">
 										<img src="images/product_1.png" alt="">
@@ -80,13 +81,16 @@
 									</div>
 									<div class="product_info">
 										<h6 class="product_name">
-											<a href="{{path('product', {'product' : product.id})}}">{{product.name}}</a>
+											<span>{{product.name}}</span>
 										</h6>
 										<div class="product_price">${{product.price}}
 										</div>
 									</div>
 								</div>
+								</a>
 								<div class="red_button add_to_cart_button">
+									<input type="hidden" class="product-id" name="product_id" value="{{product.id}}">
+									<input type="hidden" class="quantity" name="quantity" value="1">
 									<a href="#">add to cart</a>
 								</div>
 							</div>
@@ -145,4 +149,24 @@
 {% endblock %}
 {% block javascripts %}
 	<script src="{{asset('js/custom.js')}}"></script>
+	<script>
+		$( document ).ready(function() {
+			$('.add_to_cart_button').click(function(e){
+				e.preventDefault();
+				let product_id = $(this).find('.product-id').val();
+				let quantity = $(this).find('.quantity').val();
+				$.ajax({
+					url: "{{path('add_to_cart')}}",
+					type: 'GET',
+					data: {product_id, quantity},
+				success: function(data) {
+					$.notify("Thêm vào giỏ hàng thành công", "success");
+				},
+            	error: function(data) {
+					$.notify("Có gì đó sai sai!", "error");;
+				},
+				})
+			});
+		})
+	</script>
 {% endblock %}

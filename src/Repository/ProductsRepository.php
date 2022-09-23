@@ -49,22 +49,41 @@ class ProductsRepository extends ServiceEntityRepository
             ->join('p.category', 'u')
             ->where('u.name = :name')
             ->setParameter('name', $name)
+            ->andWhere('p.price IS NOT NULL')
             ->getQuery()
             ->getResult();
     }
     /**
      * @return Products[] Returns an array of Products objects
      */
-    public function findBySize($id,$category): array
+    public function findProduct($category, $name, $min, $max)
     {
         return $this->createQueryBuilder('t')
         // ->select('c.id as parameters_id, t.id as products_id')
-        ->innerJoin('t.parameters', 'p')
-        ->where('p.id IN (:parameters_id)')
-        ->setParameter('parameters_id', $id)
         ->innerJoin('t.category', 'c')
         ->andwhere('c.name = :category')
         ->setParameter('category', $category)
+        ->andWhere('t.name LIKE :name')
+        ->setParameter('name', '%'.$name.'%')
+        ->andWhere('t.price BETWEEN :min AND :max')
+        ->setParameter('min',$min)
+        ->setParameter('max',$max)
+        ->getQuery()
+        ->getResult();
+    }
+    /**
+     * @return Products[] Returns an array of Products objects
+     */
+    public function findProductPoint($name, $min, $max)
+    {
+        return $this->createQueryBuilder('t')
+        // ->select('c.id as parameters_id, t.id as products_id')
+        ->andWhere('t.price IS NULL')
+        ->andWhere('t.name LIKE :name')
+        ->setParameter('name', '%'.$name.'%')
+        ->andWhere('t.point BETWEEN :min AND :max')
+        ->setParameter('min',$min)
+        ->setParameter('max',$max)
         ->getQuery()
         ->getResult();
     }

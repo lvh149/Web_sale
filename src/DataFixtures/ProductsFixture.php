@@ -14,14 +14,22 @@ class ProductsFixture extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
-        for ($i = 0; $i < 40; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $product = new Products();
             $product->setCategory($this->getReference(CategoriesFixture::CategoryId));
             $product->setName('product '.$i);
             $product->setInfo('test');
             $product->setPrice(random_int(100, 999));
-            $product->setPoint(random_int(100, 999));
             $product->setPointGive(random_int(0, 10));
+            $manager->persist($product);
+            $product->addParameter($this->getReference(ParametersFixture::ParamId));
+        }
+        for ($i = 20; $i < 400; $i++) {
+            $product = new Products();
+            $product->setCategory($this->getReference(CategoriesFixture::CategoryId));
+            $product->setName('product '.$i);
+            $product->setInfo('test');
+            $product->setPoint(random_int(100, 999));
             $manager->persist($product);
             $product->addParameter($this->getReference(ParametersFixture::ParamId));
         }

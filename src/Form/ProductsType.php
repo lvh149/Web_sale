@@ -7,6 +7,7 @@ use App\Entity\Categories;
 use App\Entity\Parameters;
 use App\Repository\ParametersRepository;
 use App\Repository\ProductsRepository;
+use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -14,6 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType as TypeTextType;
 use Symfony\Component\Validator\Constraints\File;
 
 class ProductsType extends AbstractType
@@ -50,7 +52,9 @@ class ProductsType extends AbstractType
                 ],
             ])
             ->add('info')
-            ->add('price')
+            ->add('price', TypeTextType::class, [
+                'required' =>false,
+            ])
             ->add('point')
             ->add('point_give')
             ->add('category', EntityType::class, array(

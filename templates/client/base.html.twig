@@ -23,7 +23,27 @@
 		<script src="{{asset('plugins/Isotope/isotope.pkgd.min.js')}}"></script>
 		<script src="{{asset('plugins/OwlCarousel2-2.2.1/owl.carousel.js')}}"></script>
 		<script src="{{asset('plugins/easing/easing.js')}}"></script>
+		<script src="{{asset('js/notify.js')}}"></script>
 		<script src="{{asset('js/custom.js')}}"></script>
+		<script>
+			$(document).ready(function(){
+				$.ajax({
+					url: "{{ (path('number_cart')) }}",
+					type: 'GET',
+					data: {
+					},
+					async: true,
+					complete: function (data) {
+						var number_product = data.responseJSON[0].number_product;
+						if(number_product > 0){
+						$("#checkout_items").text(number_product);
+						$("#checkout_items").addClass('checkout_items');
+						}
+					}
+				});
+			})
+		</script>
+
 		{% block javascripts %}
 			{{ encore_entry_script_tags('app') }}
 		{% endblock %}
@@ -177,7 +197,7 @@
 										<li class="checkout">
 											<a href="{{path('view_cart')}}">
 												<i class="fa fa-shopping-cart" aria-hidden="true"></i>
-												<span id="checkout_items" class="checkout_items">2</span>
+												<span id="checkout_items"></span>
 											</a>
 										</li>
 									</ul>
@@ -284,6 +304,7 @@
 				</ul>
 			</div>
 		</div>
+		{% block body %}
 		<div class="row">
 			{% for message in app.flashes('error') %}
 				<div class="col-12">
@@ -300,7 +321,7 @@
 				</div>
 			{% endfor %}
 		</div>
-		{% block body %}{% endblock %}
+		{% endblock %}
 		<!-- Benefit -->
 
 		<div class="benefit">

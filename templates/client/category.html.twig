@@ -39,42 +39,34 @@
 									<a href="{{ path('category', {'category' : category.name}) }}">{{category.name}}</a>
 								</li>
 							{% endfor %}
+								<li>
+									<a href="{{ path('category_point') }}">Point</a>
+								</li>
 						</ul>
 					</div>
 
 					<!-- Price Range Filtering -->
 					<div class="sidebar_section">
 						<div class="sidebar_title">
+								<h5>Filter by Name</h5>
+							</div>
+								<input type="text" id="name_product" name="name_product" style="color:#f6931f; font-weight:bold;">
+								<br><br>
+						<div class="sidebar_title">
 							<h5>Filter by Price</h5>
 						</div>
 						<p>
-							<input type="text" id="amount" name="price" readonly style="border:0; color:#f6931f; font-weight:bold;">
+							<input type="text"  id="amount" name="price" readonly style="border:0; color:#f6931f; font-weight:bold;">
 						</p>
 						<div id="slider-range"></div>
-						<div class="filter_button">
+						<br>
+						<div class="btn btn-success btn-filter">
 							<span>filter</span>
 						</div>
 					</div>
 
 					<!-- Sizes -->
 					{# <form  action="{{ path('category', {'category' : products[0].category.getName()}) }}"> #}
-						<div>
-							<div class="sidebar_title">
-								<h5>Sizes</h5>
-							</div>
-							<ul class="checkboxes">
-								{% for param in params %}
-									<li>
-										{# <i class="fa fa-square-o" aria-hidden="true"></i> #}
-										<input type="checkbox" class="size-checkbox" name="size[]" value="{{param.id}}">
-										<span>{{param.value}}</span>
-									</li>
-								{% endfor %}
-							</ul>
-							<div class="btn">
-								<button id="filter" type="submit">filter</button>
-							</div>
-						</div>
 					{# </form> #}
 				</div>
 
@@ -158,6 +150,7 @@
 										<!-- Product 1 -->
 										{% for product in products %}
 											<div class="product-item {{product.category.getId()}}">
+												<a href="{{path('product', {'product' : product.id})}}">
 												<div class="product discount product_filter">
 													<div class="product_image">
 														<img src="{{asset('uploads/images/' ~ product.image)}}" alt="">
@@ -165,13 +158,16 @@
 													<div class="favorite favorite_left"></div>
 													<div class="product_info">
 														<h6 class="product_name">
-															<a href="{{path('product', {'product' : product.id})}}">{{product.name}}</a>
+															<span>{{product.name}}</span>
 														</h6>
-														<div class="product_price">${{product.price}}
+														<div class="product_price">${{product.price ?? product.point}}
 														</div>
 													</div>
 												</div>
+												</a>
 												<div class="red_button add_to_cart_button">
+													<input type="hidden" class="product-id" name="product_id" value="{{product.id}}">
+													<input type="hidden" class="quantity" name="quantity" value="1">
 													<a href="#">add to cart</a>
 												</div>
 											</div>
@@ -245,21 +241,39 @@
 {% block javascripts %}
 	<script src="{{asset('plugins/jquery-ui-1.12.1.custom/jquery-ui.js')}}"></script>
 	<script src="{{asset('js/categories_custom.js')}}"></script>
-	<script src="{{asset('js/jquery.ajax.js')}}"></script>
 	<script>
 		$(document).ready(function(){
-			$('#filter').on( "click", function() {
-				var size = [];
-				$('.size-checkbox:checked').each(function(i){
-				size[i] = $(this).val();
+			/*var min = window.location.href.indexOf("min=") === -1 ? "0" : window.location.href.split('min=').pop().split('&')[0];
+			var max = window.location.href.indexOf("max=") === -1 ? "580" : window.location.href.split('max=').pop().split('&')[0];
+			console.log(max);
+			$("#slider-range").slider('values',0,min);
+			$("#slider-range").slider('values',1,max);*/
+			let path = window.location.href.split('/').slice(0, 5).join('/');
+				path = path.split('?page')[0];
+				path = path.split('&page')[0];
+
+				$('ul a').each(function () {
+				if (this.href == path) {
+				$(this).parent('li').addClass('active');
+				}
 				});
+			$('.btn-filter').on("click", function(){
+				var amount = $('#amount').val();
+				var str = $('#amount').val().replaceAll('$',"");
+
+				var min = str.split(' - ')[0];
+				var max = str.split(' - ')[1];
 				var category ="{{category}}";
+				var name = $('#name_product').val();
+				console.log(name);
 				$.ajax({
 					url: "{{ (path('filter_product')) }}",
 					type: 'GET',
 					data: {
-						'size': size,
 						'category': category,
+						'min': min,
+						'max': max,
+						'name': name,
 					},
 					async: true,
 					complete: function (data) {
@@ -267,6 +281,22 @@
 					}
 				});
 			})
+			$('.add_to_cart_button').click(function(e){
+				e.preventDefault();
+				let product_id = $(this).find('.product-id').val();
+				let quantity = $(this).find('.quantity').val();
+				$.ajax({
+					url: "{{path('add_to_cart')}}",
+					type: 'GET',
+					data: {product_id, quantity},
+				success: function(data) {
+					$.notify("Thêm vào giỏ hàng thành công", "success");
+				},
+            	error: function(data) {
+					$.notify("Có gì đó sai sai!", "error");;
+				},
+				})
+			});
 		})
 	</script>
 {% endblock %}

@@ -19,6 +19,9 @@ class OrdersFixture extends Fixture implements DependentFixtureInterface
             $order->setCustomerId($this->getReference(UsersFixture::CustomerId));
             $order->setStatus(random_int(1, 3));
             $order->setTotalPrice(random_int(100, 1000));
+            $order->setNameReceiver('a');
+            $order->setPhoneReceiver('2136846556');
+            $order->setAddressReceiver('a123');
             $manager->persist($order);
         }
         $this->addReference(self::OrderId, $order);

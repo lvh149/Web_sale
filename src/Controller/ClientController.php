@@ -26,6 +26,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ClientController extends AbstractController
 {
@@ -40,6 +41,7 @@ class ClientController extends AbstractController
         ManagerRegistry $managerRegistry,
         UsersRepository $usersRepository,
         MailerInterface $mailer,
+        ValidatorInterface $validator,
         CartDetailRepository $cartDetailRepository
     ) {
         $this->productsRepository = $productsRepository;
@@ -52,6 +54,7 @@ class ClientController extends AbstractController
         $this->usersRepository = $usersRepository;
         $this->mailer = $mailer;
         $this->managerRegistry = $managerRegistry;
+        $this->validator = $validator;
         $this->paginatorInterface = $paginatorInterface;
     }
 
@@ -96,23 +99,25 @@ class ClientController extends AbstractController
 
     public function category(Request $request)
     {
+        $name = $request->get('name');
+        $min = $request->get('min');
+        $max = $request->get('max');
         if ($request->get('category')) {
             $category = $request->get('category');
             $product = $this->productsRepository->findByNameCategory($category);
         } else {
             $product = $this->productsRepository->findAll();
         }
-        if ($request->get('size')) {
-            $id = $request->get('size');
-            $product = $this->productsRepository->findBySize($id, $category);
+        if ($request->get('min') != null) {
+            $product = $this->productsRepository->findProduct($category, $name, $min, $max);
         }
         $categories = $this->categoriesRepository->findAll();
         $params = $this->parametersRepository->findAll();
-        if (!$product) {
-            // tao 1 trang k co san pham
-            $referer = $request->headers->get('referer');
-            return $this->redirect($referer);
-        }
+        // if (!$product) {
+        //     // tao 1 trang k co san pham
+        //     $referer = $request->headers->get('referer');
+        //     return $this->redirect($referer);
+        // }
         $products = $this->paginatorInterface->paginate(
             $product,
             $request->query->getInt('page', 1),
@@ -125,16 +130,54 @@ class ClientController extends AbstractController
             'params' => $params,
         ]);
     }
+    /**
+     * @Route("/category/point", name="category_point", methods={"GET", "POST"})
+     */
+    public function categoryPoint(Request $request)
+    {
+        $name = $request->get('name');
+        $min = $request->get('min');
+        $max = $request->get('max');
+        $product = $this->productsRepository->findBy(['price' => null]);
+        if ($request->get('min') != null) {
+            $product = $this->productsRepository->findProductPoint($name, $min, $max);
+        }
+        $categories = $this->categoriesRepository->findAll();
+        $params = $this->parametersRepository->findAll();
+        // if (!$product) {
+        //     // tao 1 trang k co san pham
+        //     $referer = $request->headers->get('referer');
+        //     return $this->redirect($referer);
+        // }
+        $products = $this->paginatorInterface->paginate(
+            $product,
+            $request->query->getInt('page', 1),
+            12
+        );
+        return $this->render('client/category.html.twig', [
+            'products' => $products,
+            'categories' => $categories,
+            'category' => "Point",
+            'params' => $params,
+        ]);
+    }
 
     /**
      * @Route("/filter-product", name="filter_product", methods={"GET", "POST"})
      */
     public function filter(Request $request)
     {
-        $id_size = $request->get('size');
+        $name = $request->get('name');
+        $min = $request->get('min');
+        $max = $request->get('max');
         $category = $request->get('category');
         if ($request->isXmlHttpRequest()) {
-            $product = $this->productsRepository->findBySize($id_size, $category);
+            if ($category == "Point") {
+                $product = $this->productsRepository->findProductPoint($name, $min, $max);
+                // dd($product);
+            } else {
+                $product = $this->productsRepository->findProduct($category, $name, $min, $max);
+            }
             $products = $this->paginatorInterface->paginate(
                 $product,
                 $request->query->getInt('page', 1),
@@ -144,11 +187,22 @@ class ClientController extends AbstractController
                 'products' => $products,
             ]);
         } else {
+            if ($category == "Point") {
+                return $this->categoryPoint($request);
+            }
             return $this->category($request);
         }
     }
 
     public function product(Request $request)
+    {
+        $product_id = $request->get('product');
+        $product = $this->productsRepository->find($product_id);
+        return $this->render('client/product.html.twig', [
+            'product' => $product,
+        ]);
+    }
+    public function productByPoint(Request $request)
     {
         $product_id = $request->get('product');
         $product = $this->productsRepository->find($product_id);
@@ -163,38 +217,45 @@ class ClientController extends AbstractController
     {
         $product_id = $request->get('product_id');
         $quantity = $request->get('quantity');
+        $product = $this->productsRepository->find($product_id);
         $cart = new Cart();
         if ($this->isGranted('ROLE_CUSTOMER')) {
-            $customer_id = $this->getUser()->getId();
-            $check_cart = $this->cartRepository->findBy(['customer' => $customer_id]);
-            if (!$check_cart) {
-                $cart->setCustomer($this->getUser());
-                $this->cartRepository->add($cart, true);
-            } else {
-                $cart = $check_cart[0];
-            }
+            try {
+                $customer_id = $this->getUser()->getId();
+                $check_cart = $this->cartRepository->findBy(['customer' => $customer_id]);
+                if (!$check_cart) {
+                    $cart->setCustomer($this->getUser());
+                    $this->cartRepository->add($cart, true);
+                } else {
+                    $cart = $check_cart[0];
+                }
 
-            $cart_id = $cart->getId();
-            $checkProduct = $this->cartDetailRepository->findBy(['cart' => $cart_id, 'product' => $product_id]);
-            if ($checkProduct) {
-                $currentQuantity = $checkProduct[0]->getQuantity();
-                $checkProduct[0]->setQuantity($currentQuantity + $quantity);
-                $this->cartDetailRepository->add($checkProduct[0], true);
-            } else {
-                $product = $this->productsRepository->find($product_id);
-                $cartDetail = new CartDetail();
-                $cartDetail->setCart($cart);
-                $cartDetail->setProduct($product);
-                $cartDetail->setQuantity($quantity);
-                $this->cartDetailRepository->add($cartDetail, true);
+                $cart_id = $cart->getId();
+                $checkProduct = $this->cartDetailRepository->findBy(['cart' => $cart_id, 'product' => $product_id]);
+                if ($checkProduct) {
+                    $currentQuantity = $checkProduct[0]->getQuantity();
+                    $checkProduct[0]->setQuantity($currentQuantity + $quantity);
+                    $this->cartDetailRepository->add($checkProduct[0], true);
+                } else {
+                    $cartDetail = new CartDetail();
+                    $cartDetail->setCart($cart);
+                    $cartDetail->setProduct($product);
+                    $cartDetail->setQuantity($quantity);
+                    $this->cartDetailRepository->add($cartDetail, true);
+                }
+                return new Response('success', 200);
+            } catch (\Exception $e) {
+                return new Response('error', 400);
             }
-            $this->addFlash(
-                'success',
-                'Thêm vào giỏ hàng thành công'
-            );
-            return $this->redirectToRoute('client_page', [], Response::HTTP_SEE_OTHER);
         } else {
-            $product = $this->productsRepository->find($product_id);
+            if ($product->getPoint()) {
+                $this->addFlash(
+                    'error',
+                    'Chỉ dành cho khách hàng có tài khoản'
+                );
+                $referer = $request->headers->get('referer');
+                return $this->redirect($referer);
+            }
             $cart = [
                 'product' => $product,
                 'quantity' => $quantity,
@@ -222,7 +283,9 @@ class ClientController extends AbstractController
             $customer_id = $this->getUser()->getId();
             $cart = $this->cartRepository->findBy(['customer' => $customer_id]);
             $cartDetails = $this->cartDetailRepository->findBy(['cart' => $cart]);
-
+            if ($cartDetails == null) {
+                return $this->render('client/empty_cart.html.twig');
+            }
             return $this->render('client/cart.html.twig', [
                 'cartDetails' => $cartDetails
             ]);
@@ -232,14 +295,33 @@ class ClientController extends AbstractController
         ]);
     }
     /**
+     * @Route("number-cart", name="number_cart", methods={"GET", "POST"})
+     */
+    public function getNumberCart(Request $request)
+    {
+        if ($this->isGranted('ROLE_CUSTOMER')) {
+            $customer_id = $this->getUser()->getId();
+            $cart = $this->cartRepository->findBy(['customer' => $customer_id]);
+            $cartDetails = $this->cartDetailRepository->numberCart($cart);
+
+            return $this->json($cartDetails);
+        }
+    }
+    /**
      * @Route("delete-cart", name="delete_cart", methods={"GET", "POST"})
      */
     public function deleteCart(Request $request)
     {
         $product_id = $request->get('product_id');
+        $clear = $request->get('clear');
         if ($this->isGranted('ROLE_CUSTOMER')) {
             $customer_id = $this->getUser()->getId();
             $cart = $this->cartRepository->findBy(['customer' => $customer_id]);
+            if ($clear == "clear") {
+                $cartDetails = $this->cartDetailRepository->ClearCart($cart);
+                return new Response(null, 200);
+            }
+
             $cartDetails = $this->cartDetailRepository->findBy(['cart' => $cart, 'product' => $product_id]);
             $cartDetail = $cartDetails[0];
             $this->cartDetailRepository->remove($cartDetail, true);
@@ -247,6 +329,10 @@ class ClientController extends AbstractController
         } else {
             $session = $request->getSession();
             $cart =  $session->get('cart');
+            if ($clear == "clear") {
+                $session->remove('cart');
+                return new Response(null, 200);
+            }
             // xoa san pham khoi cart
             unset($cart[$product_id]);
             $session->set('cart', $cart);
@@ -284,13 +370,23 @@ class ClientController extends AbstractController
      */
     public function checkout(Request $request)
     {
-        $arrProduct = $request->get('quantity');
         $name_receiver = $request->get('name_receiver');
         $phone_receiver = $request->get('phone_receiver');
         $address_receiver = $request->get('address_receiver');
-        // dd($request->get('quantity'));
         if ($this->isGranted('ROLE_CUSTOMER')) {
-            $customer_id = $this->getUser()->getId();
+            // kiem tra xem point nguoi dung co du ko
+            if (!isset($this->getUser()->getCart()->getCartDetail()[0])) {
+                return $this->redirectToRoute('client_page', [], Response::HTTP_SEE_OTHER);
+            }
+            $check_total_point = $this->cartDetailRepository->SumPoint($this->getUser()->getCart());
+            $check_point = $check_total_point[0]['total_point'] ?? 0;
+            if ($check_point > $this->getUser()->getPoint()) {
+                $this->addFlash(
+                    'error',
+                    'Không đủ point'
+                );
+                return $this->redirectToRoute('view_cart', [], Response::HTTP_SEE_OTHER);
+            }
             $order = new Orders();
             $order->setCustomerId($this->getUser());
             $order->setStatus(1);
@@ -298,24 +394,43 @@ class ClientController extends AbstractController
             $order->setNameReceiver($name_receiver);
             $order->setPhoneReceiver($phone_receiver);
             $order->setAddressReceiver($address_receiver);
+            $errors = $this->validator->validate($order);
+            if (count($errors) > 0) {
+                $session = new Session();
+                foreach($errors as $error){
+                    $session->getFlashBag()->add('error', $error->getpropertyPath().": ".$error->getMessage());
+                }
+                $session->getFlashBag()->add('name_receiver', $name_receiver);
+                $session->getFlashBag()->add('phone_receiver', $phone_receiver);
+                $session->getFlashBag()->add('address_receiver', $address_receiver);
+                return $this->redirectToRoute('view_cart', [], Response::HTTP_SEE_OTHER);
+            }
             $this->ordersRepository->add($order, true);
             //them tung san pham tu cart sang order
-            $point = 0;
+            $addpoint = 0;
             $total_price = 0;
-            foreach ($arrProduct as $product_id => $quantity) {
-                $product = $this->productsRepository->find($product_id);
+            $total_point = 0;
+            $arrCartDetail = $this->cartDetailRepository->findBy(['cart' => $this->getUser()->getCart()]);
+            foreach ($arrCartDetail as $cartDetail) {
+                $quantity = $cartDetail->getQuantity();
+                $price = $cartDetail->getProduct()->getPrice();
+                $point = $cartDetail->getProduct()->getPoint();
+                $product = $this->productsRepository->find($cartDetail->getProduct());
                 $orderDetail = new OrdersDetail();
                 $orderDetail->setOrderId($order);
-                $orderDetail->setProductId($product);
-                $orderDetail->setQuantity($quantity);
-                $orderDetail->setPrice($product->getPrice());
+                $orderDetail->setProductId($cartDetail->getProduct());
+                $orderDetail->setQuantity($cartDetail->getQuantity());
+                $orderDetail->setPrice($price ?? 0);
                 $this->ordersDetailRepository->add($orderDetail, true);
-                $point += $product->getPointGive() * $quantity;
-                $total_price += $product->getPrice();
+                $addpoint += $product->getPointGive() * $quantity;
+                $total_price += $price * $quantity ?? 0;
+                $total_point += $point * $quantity ?? 0;
             }
+            $point = $addpoint - $total_point;
             $order->setTotalPrice($total_price);
             $this->ordersRepository->add($order, true);
-            $user = $this->getUser()->addPoint($point);
+            $user = $this->getUser();
+            $user->addPoint($point);
             $this->usersRepository->add($user, true);
             // xoa cartdetail sau khi gui don
             $cart = $this->getUser()->getCart();
@@ -328,13 +443,14 @@ class ClientController extends AbstractController
                 ->to($this->getUser()->getEmail())
                 ->subject('Bạn đã đặt hàng thành công')
                 ->html('abc');
-                // ->htmlTemplate('reset_password/email.html.twig');
+            // ->htmlTemplate('reset_password/email.html.twig');
             $this->mailer->send($email);
             $this->addFlash(
                 'success',
                 'Đặt hàng thành công'
             );
-            return $this->redirectToRoute('view_cart', [], Response::HTTP_SEE_OTHER);
+            // return $this->redirectToRoute('view_cart', [], Response::HTTP_SEE_OTHER);
+            return $this->render('client/success_order.html.twig');
         } else {
             //tao khach hang
             $name_customer = $request->get('name_customer');
@@ -347,7 +463,7 @@ class ClientController extends AbstractController
             $user->setPhone($phone_customer);
             $user->setAddress($address_customer);
             $this->usersRepository->add($user, true);
-            //thong tin trong order            
+            //thong tin trong order
             $order = new Orders();
             $order->setCustomerId($user);
             $order->setStatus(1);
@@ -377,7 +493,8 @@ class ClientController extends AbstractController
                 'success',
                 'Đặt hàng thành công'
             );
-            return $this->redirectToRoute('view_cart', [], Response::HTTP_SEE_OTHER);
+            // return $this->redirectToRoute('view_cart', [], Response::HTTP_SEE_OTHER);
+            return $this->render('client/success_order.html.twig');
         }
     }
     public function contact(Request $request)

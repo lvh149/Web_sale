@@ -8,11 +8,28 @@
 {% block javascripts %}
 	<script src="{{asset('js/single_custom.js')}}"></script>
 	<script type="text/javascript">
-	$(document).on('click','.minus, .plus',function(){
-    	document.getElementById('quantity').value = document.getElementById('quantity_value').innerHTML;
-});
-
-</script>
+		$( document ).ready(function() {
+			$('.add_to_cart_button').click(function(e){
+				e.preventDefault();
+				let product_id = $(this).parent('div').find('.product-id').val();
+				let quantity = $(this).parent('div').find('.quantity').val();
+				$.ajax({
+					url: "{{path('add_to_cart')}}",
+					type: 'GET',
+					data: {product_id, quantity},
+				success: function(data) {
+					$.notify("Thêm vào giỏ hàng thành công", "success");
+				},
+            	error: function(data) {
+					$.notify("Có gì đó sai sai!", "error");;
+				},
+				})
+			});
+		})
+		$(document).on('click', '.minus, .plus', function () {
+			document.getElementById('quantity').value = document.getElementById('quantity_value').innerHTML;
+		});
+	</script>
 {% endblock %}
 
 {% block body %}
@@ -67,7 +84,12 @@
 						<span>free delivery</span>
 					</div>
 					<div class="original_price"></div>
-					<div class="product_price">${{product.price}}</div>
+					{% if product.price %}
+						<div class="product_price">Price: ${{product.price}}</div>
+					{% else %}
+						<div class="product_price">Point: ${{product.point}}</div>
+					{% endif %}
+
 					<ul class="star_rating">
 						<li>
 							<i class="fa fa-star" aria-hidden="true"></i>
@@ -86,9 +108,11 @@
 						</li>
 					</ul>
 					<br><br>
-					<div class="">Point: {{product.point}}</div>
-					<div class="">Point Give: {{product.pointGive}}</div>
-					<form action="{{path('add_to_cart')}}" method="post">
+					{% if product.pointGive %}
+						<div class="">Point Give:
+							{{product.pointGive}}</div>
+					{% endif %}
+					{# <form action="{{path('add_to_cart')}}" method="post"> #}
 						<div class="quantity d-flex flex-column flex-sm-row align-items-sm-center">
 							<span>Quantity:</span>
 							<div class="quantity_selector">
@@ -100,14 +124,14 @@
 									<i class="fa fa-plus" aria-hidden="true"></i>
 								</span>
 							</div>
-							<input type="hidden" name="product_id" value="{{product.id}}">
-							<input type="hidden" id="quantity" name="quantity" value="1">
+							<input type="hidden" class="product-id" name="product_id" value="{{product.id}}">
+							<input type="hidden" class="quantity" id="quantity" name="quantity" value="1">
 							<button type="submit" class="red_button add_to_cart_button">
 								Add to card
 							</button>
-						</form>
-						<div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div>
-					</div>
+							<div class="product_favorite d-flex flex-column align-items-center justify-content-center"></div>
+						</div>
+					{# </form> #}
 				</div>
 			</div>
 		</div>

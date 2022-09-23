@@ -49,18 +49,29 @@
 					data: {quantity},
 				})
 				.done(function() {
-					
 
 				});
 			});
-            $(".karl-checkout-btn").click(function(e){                
+			$('#clear_cart').click(function(){
+				let clear = "clear";
+				$.ajax({
+					url: "{{path('delete_cart')}}",
+					type: 'GET',
+					data: {clear},
+				})
+				.done(function() {
+					$('#table_cart > tbody').empty();
+					getTotal();
+
+				});
+			});
+            $(".karl-checkout-btn").click(function(e){
                 var r = confirm(" Bạn có muốn tạo tài khoản không?");
                 if (r == true) {
                     e.preventDefault();
                     window.location.href = '/register';
                 } else {
                     return true;
-                    
                 }
 		    })
         })
@@ -75,7 +86,7 @@
 				<div class="row">
 					<div class="col-12">
 						<div class="cart-table clearfix">
-							<table class="table table-responsive">
+							<table class="table table-responsive" id="table_cart">
 								<thead>
 									<tr>
 										<th>Product</th>
@@ -125,7 +136,9 @@
 								<a href="{{path('client_page')}}">Continue shooping</a>
 							</div>
 							<div class="update-checkout w-50 text-right">
-							<a href="#">clear cart</a>
+							<a href="#">
+								<div id="clear_cart">clear cart</div>
+							</a>
 							<a href="#">
 								<div id="update_cart">Update cart</div>
 							</a>

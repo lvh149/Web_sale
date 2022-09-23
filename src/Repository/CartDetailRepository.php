@@ -39,28 +39,45 @@ class CartDetailRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return CartDetail[] Returns an array of CartDetail objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
 
-//    public function findOneBySomeField($value): ?CartDetail
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function numberCart($cart_id): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(c.id) as number_product')
+            ->andWhere('c.cart = :cart_id')
+            ->setParameter('cart_id', $cart_id)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function SumPoint($cart_id): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('SUM(p.point * c.quantity) as total_point')
+            ->andWhere('c.cart = :cart_id')
+            ->setParameter('cart_id', $cart_id)
+            ->join('c.product', 'p')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function ClearCart($cart_id)
+    {
+        return $this->createQueryBuilder('c')
+            ->delete()
+            ->where('c.cart = :cart_id')
+            ->setParameter('cart_id', $cart_id)
+            ->getQuery()
+            ->execute();
+    }
+
+    //    public function findOneBySomeField($value): ?CartDetail
+    //    {
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }
