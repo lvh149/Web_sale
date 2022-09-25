@@ -42,6 +42,7 @@ class ClientController extends AbstractController
         UsersRepository $usersRepository,
         MailerInterface $mailer,
         ValidatorInterface $validator,
+        PaginatorInterface $paginator,
         CartDetailRepository $cartDetailRepository
     ) {
         $this->productsRepository = $productsRepository;
@@ -54,6 +55,7 @@ class ClientController extends AbstractController
         $this->usersRepository = $usersRepository;
         $this->mailer = $mailer;
         $this->managerRegistry = $managerRegistry;
+        $this->paginator = $paginator;
         $this->validator = $validator;
         $this->paginatorInterface = $paginatorInterface;
     }
@@ -248,7 +250,12 @@ class ClientController extends AbstractController
                 return new Response('error', 400);
             }
         } else {
+            $check_product = $this->productsRepository->find($product_id);
+            if($check_product == null){
+                return new Response('error', 400);
+            }
             if ($product->getPoint()) {
+                return new Response('error', 400);
                 $this->addFlash(
                     'error',
                     'Chỉ dành cho khách hàng có tài khoản'
@@ -289,10 +296,50 @@ class ClientController extends AbstractController
             return $this->render('client/cart.html.twig', [
                 'cartDetails' => $cartDetails
             ]);
+        } else {
+            $session = $request->getSession();
+            $cart =  $session->get('cart');
+            if($cart == null){
+                return $this->render('client/empty_cart.html.twig');
+            }
+            return $this->render('client/cartSession.html.twig', [
+                // 'cartDetails' => $cartDetails
+            ]);
         }
-        return $this->render('client/cartSession.html.twig', [
-            // 'cartDetails' => $cartDetails
-        ]);
+    }
+    /**
+     * @Route("view-order", name="view_my_order", methods={"GET", "POST"})
+     */
+    public function viewOrder(Request $request)
+    {
+        if ($this->isGranted('ROLE_CUSTOMER')) {
+            $customer_id = $this->getUser()->getId();
+            $orders = $this->ordersRepository->findBy(['customer' => $customer_id]);
+            $pagination = $this->paginator->paginate(
+                $orders,
+                $request->query->getInt('page', 1),
+            );
+            return $this->render('client/order.html.twig', [
+                'pager' => $pagination
+            ]);
+        }
+    }
+    /**
+     * @Route("view-orderDetail", name="view_order_detail", methods={"GET", "POST"})
+     */
+    public function viewOrderDetail(Request $request)
+    {
+        if ($this->isGranted('ROLE_CUSTOMER')) {
+            $order_id = $request->get('id');
+            $orderDetail = $this->ordersDetailRepository->findBy(['order' => $order_id]);
+            $pagination = $this->paginatorInterface->paginate(
+                $orderDetail,
+                $request->query->getInt('page', 1),
+            );
+            return $this->render('client/orderDetail.html.twig', [
+                'orderdetails' => $pagination,
+            ]);
+        }
     }
     /**
      * @Route("number-cart", name="number_cart", methods={"GET", "POST"})
@@ -397,8 +444,8 @@ class ClientController extends AbstractController
             $errors = $this->validator->validate($order);
             if (count($errors) > 0) {
                 $session = new Session();
-                foreach($errors as $error){
-                    $session->getFlashBag()->add('error', $error->getpropertyPath().": ".$error->getMessage());
+                foreach ($errors as $error) {
+                    $session->getFlashBag()->add('error', $error->getpropertyPath() . ": " . $error->getMessage());
                 }
                 $session->getFlashBag()->add('name_receiver', $name_receiver);
                 $session->getFlashBag()->add('phone_receiver', $phone_receiver);
@@ -442,7 +489,8 @@ class ClientController extends AbstractController
                 ->from(new Address('rfaceibookp3@gmail.com', 'hung'))
                 ->to($this->getUser()->getEmail())
                 ->subject('Bạn đã đặt hàng thành công')
-                ->html('abc');
+                ->html("Xin chào" . " " . $user->getName() ."<br> Đơn hàng của bạn đang được xét duyệt");
+                // ->html('Đơn hàng của bạn đang được xét duyệt');
             // ->htmlTemplate('reset_password/email.html.twig');
             $this->mailer->send($email);
             $this->addFlash(
@@ -452,6 +500,10 @@ class ClientController extends AbstractController
             // return $this->redirectToRoute('view_cart', [], Response::HTTP_SEE_OTHER);
             return $this->render('client/success_order.html.twig');
         } else {
+            $check =  $request->getSession()->get('cart');
+            if (!$check) {
+                return $this->redirectToRoute('client_page', [], Response::HTTP_SEE_OTHER);
+            }
             //tao khach hang
             $name_customer = $request->get('name_customer');
             $email_customer = $request->get('email_customer');
@@ -488,6 +540,14 @@ class ClientController extends AbstractController
             }
             $order->setTotalPrice($total_price);
             $this->ordersRepository->add($order, true);
+            $email = (new TemplatedEmail())
+                ->from(new Address('rfaceibookp3@gmail.com', 'hung'))
+                ->to($email_customer)
+                ->subject('Bạn đã đặt hàng thành công')
+                ->html("Xin chào" . " " . $user->getName() ."<br> Đơn hàng của bạn đang được xét duyệt");
+                // ->html('Đơn hàng của bạn đang được xét duyệt');
+            // ->htmlTemplate('reset_password/email.html.twig');
+            $this->mailer->send($email);
             $session->clear();
             $this->addFlash(
                 'success',

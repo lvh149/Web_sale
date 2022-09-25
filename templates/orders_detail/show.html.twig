@@ -37,8 +37,15 @@
 											<td colspan="4">no records found</td>
 										</tr>
 									{% endfor %}
-								</tbody>
+								</tbody>								
 							</table>
+							<h3>
+							<span> Thông tin người nhận </span>
+							</h3>
+							<span> Tên: {{orderdetails[0].getOrderId().getNameReceiver()}}</span><br>
+							<span> Số điện thoại: {{orderdetails[0].getOrderId().getPhoneReceiver()}}</span><br>
+							<span> Địa chỉ: {{orderdetails[0].getOrderId().getAddressReceiver()}}</span><br>
+							<span> Tổng tiền: {{orderdetails[0].getOrderId().getTotalPrice()}}</span>
 						</div>
 						<div class="navigation">
 							{{ knp_pagination_render(orderdetails) }}

@@ -59,7 +59,6 @@ class Products
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Assert\Positive
      * @Assert\Type("int")
      */
     private $point_give;

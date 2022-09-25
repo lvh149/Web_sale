@@ -12,24 +12,33 @@
 			$(document).on('click','.test1, .test3',function(){
 				let price = $(this).parents('tr').find('.price').text();
 				let point = $(this).parents('tr').find('.point').text();
+				let point_received = $(this).parents('tr').find('.point-give').text();
 				let quantity = $(this).parents('tr').find('.qty-text').val();
 				let sum_price = price * quantity;
 				let sum_point = point * quantity;
+				let sum_point_received = point_received * quantity;
+				console.log(sum_point_received);
 				$(this).parents('tr').find('.total_price').text(sum_price);
 				$(this).parents('tr').find('.total_point').text(sum_point);
+				$(this).parents('tr').find('.point-give').text(sum_point_received);
 				getTotal();
 			})
 			function getTotal(){
 				let total_price =0;
 				let total_point =0;
+				let total_point_received =0;
 				$(".total_price").each(function() {
 					total_price += parseFloat($(this).text());
 				});
 				$(".total_point").each(function() {
 					total_point += parseFloat($(this).text());
 				});
+				$(".point-give").each(function() {
+					total_point_received += parseFloat($(this).text());
+				});
 				$('#all_price').text(total_price);
 				$('#all_point').text(total_point);
+				$('#point_received').text(total_point_received);
 			}
 			function updateCart(){
 				let quantity = {};
@@ -115,7 +124,9 @@
 									{% for cartDetail in cartDetails %}
 										<tr>
 											<td class="cart_product_img d-flex align-items-center">
-												<a href="#"><img src="img/product-img/product-9.jpg" alt="Product"></a>
+												<a href="{{path('product', {'product' : cartDetail.product.getId()})}}">
+												<img src="{{asset('uploads/images/' ~ cartDetail.product.getImage())}}" alt="Product">
+												</a> 
 												<h6>{{cartDetail.product.getName()}}</h6>
 											</td>
 											<td class="price">
@@ -125,7 +136,7 @@
 												<span>{{cartDetail.product.Point()}}</span>
 											</td>
 											<td class="point-give">
-												<span>{{cartDetail.product.PointGive() ?? 0}}</span>
+												<span>{{cartDetail.product.PointGive() * cartDetail.quantity ?? 0}}</span>
 											</td>
 											<td class="qty">
 												<div class="quantity">
@@ -190,7 +201,7 @@
 										<strong>Receiver's Name</strong>
 									</span>
 									<span >
-										<strong><input type="text" name="name_receiver" value="{{app.session.getFlashBag.get('name_receiver') ?? app.user.name}}" ></strong>
+										<strong><input type="text" name="name_receiver" value="{{app.user.name}}" ></strong>
 									</span>
 								</li>
 								<li>
@@ -215,6 +226,14 @@
 									</span>
 									<span >
 										<strong>{{app.user.point}}</strong>
+									</span>
+								</li>
+								<li>
+									<span>
+										<strong>Total point received</strong>
+									</span>
+									<span id="point_received">
+										<strong></strong>
 									</span>
 								</li>
 								<li>

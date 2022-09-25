@@ -47,9 +47,7 @@ class AuthController extends AbstractController
     public function changeInfo(Request $request): Response
     {
         $user =$this->getUser();
-        $form = $this->createForm(EditUsersType::class, $user,[
-            // 'validation_groups' => ['default'],
-        ]);
+        $form = $this->createForm(EditUsersType::class, $user);
         $form->remove('roles');
         $form->remove('point');
         $form->handleRequest($request);
@@ -60,6 +58,27 @@ class AuthController extends AbstractController
         }
 
         return $this->renderForm('users/edit.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
+    /**
+     * @Route("/infor", name="customer_infor", methods={"GET", "POST"})
+     */
+    public function changeInfoCustomer(Request $request): Response
+    {
+        $user =$this->getUser();
+        $form = $this->createForm(EditUsersType::class, $user);
+        $form->remove('roles');
+        $form->remove('point');
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->usersRepository->add($user, true);
+            return $this->redirectToRoute('app_login', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('users/customer_infor.html.twig', [
             'user' => $user,
             'form' => $form,
         ]);
@@ -88,6 +107,34 @@ class AuthController extends AbstractController
         }
 
         return $this->renderForm('users/changePassword.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
+    /**
+     * @Route("/cus-changepassword", name="customer_change_password", methods={"GET", "POST"})
+     */
+    public function changePasswordCustomer(Request $request): Response
+    {
+        $user =$this->getUser();
+
+        $form = $this->createForm(ChangePasswordType::class, $user, [
+            'validation_groups' => ['default','registration'],
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newPassword = $form->getData()->getNewPassword();
+            $hashedPassword = $this->passwordHasher->hashPassword(
+                $user,
+                $newPassword
+            );
+            $user->setPassword($hashedPassword);
+            $this->usersRepository->add($user, true);
+            return $this->redirectToRoute('app_login', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('users/cus_changePassword.html.twig', [
             'user' => $user,
             'form' => $form,
         ]);

@@ -101,7 +101,9 @@
 									{% for cartDetail in app.session.get('cart') %}
 										<tr>
 											<td class="cart_product_img d-flex align-items-center">
-												<a href="#"><img src="img/product-img/product-9.jpg" alt="Product"></a>
+												<a href="{{path('product', {'product' : cartDetail.product.getId()})}}">
+												<img src="{{asset('uploads/images/' ~ cartDetail.product.getImage())}}" alt="Product">
+												</a>
 												<h6>{{cartDetail.product.getName()}}</h6>
 											</td>
 											<td class="price">

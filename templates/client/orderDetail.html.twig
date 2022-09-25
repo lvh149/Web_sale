@@ -1,0 +1,85 @@
+{% extends 'client/base.html.twig' %}
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/main_styles.css')}}">
+<link rel="stylesheet" type="text/css" href="{{ asset('css/core-style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.css')}}">
+{% endblock %}
+{# {% block title %}Orders index{% endblock %} #}
+
+{% block body %}
+	<br><br><br><br><br><br><br>
+	<div class="cart_area section_padding_100 clearfix">
+    <div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="cart-table clearfix">
+					<div class="card-content">
+						<h2>
+							Đơn hàng
+						</h2>
+						<a href="{{ app.request.headers.get('referer') }}">
+							<button class="btn btn-success">Quay lại</button>
+						</a>
+						<div class="row" style="height:100%;">
+							<div class="table-responsive">
+								<table class="table">
+									<thead class="text-primary">
+										<tr>
+											<th>Id</th>
+											<th>Mã hóa đơn</th>
+											<th>Tên sản phẩm</th>
+											<th>Số lượng</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for orderdetail in orderdetails %}
+											<tr>
+												<td>{{ orderdetail.id }}</td>
+												<td>{{ orderdetail.getOrderId().id }}</td>
+												<td>{{ orderdetail.getProductId().name }}</td>
+												<td>{{ orderdetail.quantity }}</td>
+											</tr>
+										{% else %}
+											<tr>
+												<td colspan="4">no records found</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+								<h3>
+									<span>
+										Thông tin người nhận
+									</span>
+								</h3>
+								<span>
+									Tên:
+									{{orderdetails[0].getOrderId().getNameReceiver()}}</span><br>
+								<span>
+									Số điện thoại:
+									{{orderdetails[0].getOrderId().getPhoneReceiver()}}</span><br>
+								<span>
+									Địa chỉ:
+									{{orderdetails[0].getOrderId().getAddressReceiver()}}</span><br>
+								<span>
+									Tổng tiền:
+									{{orderdetails[0].getOrderId().getTotalPrice()}}</span>
+							</div>
+							<div class="navigation">
+								{{ knp_pagination_render(orderdetails) }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		$(function () {
+$(".collapse").collapse();
+})
+	</script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'client/base.html.twig' %}
+{% block stylesheets %}
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/main_styles.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/core-style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('css/responsive.css')}}">
+{% endblock %}
+
+{# {% block title %}Orders index{% endblock %} #}
+
+{% block body %}
+<br><br><br><br><br><br><br><br><br>
+<div class="cart_area section_padding_100 clearfix">
+    <div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="cart-table clearfix">
+					<div class="card-content">
+						<h2>
+							Đơn hàng
+						</h2>
+						<div class="row" style="height:100%;">
+							<div class="table-responsive ">
+								<table class="table">
+									<thead class="text-primary">
+										<tr>
+											<th>Id</th>
+											<th>Date</th>
+											<th>Tên khách hàng</th>
+											<th>Email</th>
+											<th>Số điện thoại</th>
+											<th>Xem đơn hàng</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for order in pager %}
+											<tr>
+												<td>{{ order.id }}</td>
+												<td>{{ order.createdAt ? order.createdAt|date('Y-m-d') : '' }}</td>
+												<td>{{ order.getCustomerId().name() }}</td>
+												<td>{{ order.getCustomerId().email() }}</td>
+												<td>{{ order.getCustomerId().phone() }}</td>
+												<td>
+													<a href="{{ path('view_order_detail', {'id': order.id}) }}">
+														<button class="btn btn-success">Xem</button>
+													</a>
+												</td>
+											</tr>
+										{% else %}
+											<tr>
+												<td colspan="4">Chưa có đơn hàng</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+							<div class="navigation">
+								{{ knp_pagination_render(pager) }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        </div>
+        </div>
+	{# {% endif %} #}
+{% endblock %}
+
+{% block javascripts %}
+	<script>
+		$(function () {
+$(".collapse").collapse();
+})
+	</script>
+{% endblock %}

@@ -122,12 +122,16 @@
 											<ul class="account_selection">
 												{% if is_granted('ROLE_CUSTOMER') %}
 													<li>
-														<a href="{{path('app_change_info')}}">
+														<a href="{{path('customer_infor')}}">
 															<i class="fa" aria-hidden="true"></i>Information</a>
 													</li>
 													<li>
-														<a href="{{path('app_change_password')}}">
+														<a href="{{path('customer_change_password')}}">
 															<i class="fa " aria-hidden="true"></i>Change Password</a>
+													</li>
+													<li>
+														<a href="{{path('view_my_order')}}">
+															<i class="fa " aria-hidden="true"></i>Information</a>
 													</li>
 													<li>
 														<a href="{{path('app_logout')}}">

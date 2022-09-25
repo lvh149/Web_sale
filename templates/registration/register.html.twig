@@ -1,24 +1,145 @@
-{% extends 'base.html.twig' %}
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
 
-{% block title %}Register{% endblock %}
+		<!-- Bootstrap core CSS     -->
+		<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+		<link href="{{ asset('css/material-dashboard.css') }}" rel="stylesheet">
+		<link href="{{ asset('css/font-awesome.min.css') }}" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="{{ asset('css/fontgg.css') }}">
+		<link
+		href="{{ asset('css/icon.css') }}" rel="stylesheet">
+		{# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+		{% block stylesheets %}
+			{{ encore_entry_link_tags('app') }}
+		{% endblock %}
 
-{% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+		<script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
+		<script src="{{ asset('js/jquery-ui.js') }}"></script>
+		<script src="{{ asset('js/bootstrap.min.js') }}"></script>
+		<script src="{{ asset('js/material.min.js') }}"></script>
+		<script src="{{ asset('js/perfect-scrollbar.jquery.min.js') }}"></script>
+		<script src="{{ asset('js/core.js') }}"></script>
+		<script src="{{ asset('js/arrive.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.validate.min.js') }}"></script>
+		<script src="{{ asset('js/moment.min.js') }}"></script>
+		<script src="{{ asset('js/chartist.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.bootstrap-wizard.js') }}"></script>
+		<script src="{{ asset('js/bootstrap-notify.js') }}"></script>
+		<script src="{{ asset('js/jquery.select-bootstrap.js') }}"></script>
+		<script src="{{ asset('js/sweetalert2.js') }}"></script>
+		<script src="{{ asset('js/jasny-bootstrap.min.js') }}"></script>
+		<script src="{{ asset('js/fullcalendar.min.js') }}"></script>
+		<script src="{{ asset('js/jquery.tagsinput.js') }}"></script>
+		<script src="{{ asset('js/material-dashboard.js') }}"></script>
+		<script src="{{ asset('js/bootstrap-datetimepicker.js') }}"></script>
+		<script>
+			$(function () {
+let path = window.location.href.split('/').slice(0, 6).join('/');
+path = path.split('?page')[0];
+path = path.split('&page')[0];
+console.log(path);
 
-    <h1>Register</h1>
+$('ul a').each(function () {
+if (this.href == path) {
+$(this).parent('li').addClass('active');
+}
+});
+})
+		</script>
+		{% block javascripts %}
+			{{ encore_entry_script_tags('app') }}
+		{% endblock %}
+	</head>
+	<body class="off-canvas-sidebar">
+		<nav class="navbar navbar-primary navbar-transparent navbar-absolute">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigation-example-2">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href=" ../dashboard.html ">Material Dashboard Pro</a>
+				</div>
+				<div class="collapse navbar-collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a href="{{path('home_page')}}">
+								<i class="material-icons">dashboard</i>
+								Dashboard
+							</a>
+						</li>
+						<li class="">
+							<a href="{{path('app_login')}}">
+								<i class="material-icons">fingerprint</i>
+								Login
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<div class="wrapper wrapper-full-page">
+			<div class="full-page register-page" filter-color="black" data-image="../../assets/img/register.jpeg">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-10 col-md-offset-1">
+							<div class="card card-signup">
+								<h2 class="card-title text-center">Register</h2>
+								<div class="row">
+									<div class="col-md-5 col-md-offset-1">
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.name) }}
-        {{ form_row(registrationForm.address) }}
-        {{ form_row(registrationForm.phone) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
+										{% block body %}
+											{% for flash_error in app.flashes('verify_email_error') %}
+												<div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+											{% endfor %}
+
+											<h1>Register</h1>
+
+											{{ form_start(registrationForm) }}
+											{{ form_row(registrationForm.name) }}
+											{{ form_row(registrationForm.address) }}
+											{{ form_row(registrationForm.phone) }}
+											{{ form_row(registrationForm.email) }}
+											{{ form_row(registrationForm.plainPassword, {
             label: 'Password'
         }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+											{{ form_row(registrationForm.agreeTerms) }}
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
-{% endblock %}
+											<button type="submit" class="btn">Register</button>
+											{{ form_end(registrationForm) }}
+										{% endblock %}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<footer class="footer">
+					<div class="container">
+						<nav class="pull-left">
+							<ul>
+								<li><a href="#">Home</a></li>
+								<li><a href="#">Company</a></li>
+								<li><a href="#">Portofolio</a></li>
+								<li><a href="#">Blog</a></li>
+							</ul>
+						</nav>
+						<p class="copyright pull-right">
+							&copy;
+							<script>
+								document.write(new Date().getFullYear())
+							</script>
+							<a href="http://www.creative-tim.com">
+								Creative Tim
+							</a>, made with love for a better web
+						</p>
+					</div>
+				</footer>
+			</div>
+		</div>
+	</body>
+
+</html>

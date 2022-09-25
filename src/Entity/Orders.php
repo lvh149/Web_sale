@@ -162,7 +162,7 @@ class Orders
         return $this;
     }
 
-    public function getNameReceiver(): ?int
+    public function getNameReceiver()
     {
         return $this->name_receiver;
     }
@@ -173,7 +173,7 @@ class Orders
 
         return $this;
     }
-    public function getPhoneReceiver(): ?int
+    public function getPhoneReceiver()
     {
         return $this->phone_receiver;
     }
@@ -184,7 +184,7 @@ class Orders
 
         return $this;
     }
-    public function getAddressReceiver(): ?int
+    public function getAddressReceiver()
     {
         return $this->address_receiver;
     }
