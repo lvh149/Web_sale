@@ -60,8 +60,8 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
     /**
      * @ORM\Column(type="string", length=255,unique = true)
-     * @Assert\Length(min = 8, max = 20, minMessage = "min_lenght", maxMessage = "max_lenght")
-     * @Assert\Regex(pattern="/^[0-9]*$/", message="number_only")
+     * @Assert\Length(min = 8, max = 20)
+     * @Assert\Regex(pattern="/^[0-9]*$/")
      */
     private $phone;
 
